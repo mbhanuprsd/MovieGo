@@ -9,9 +9,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MovieGo',
       theme: ThemeData(
-        primarySwatch: Colors.amber,
-        accentColor: Colors.deepOrange,
-      ),
+          primarySwatch: Colors.amber,
+          accentColor: Color(0xFF4E342E),
+          scaffoldBackgroundColor: Color(0xFF4E342E)),
       home: SplashPage(),
     );
   }

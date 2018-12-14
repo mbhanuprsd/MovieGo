@@ -2,7 +2,7 @@ class MovieSearchData {
   int page;
   int totalResults;
   int totalPages;
-  List<Results> results;
+  List<MovieInfo> results;
 
   MovieSearchData(
       {this.page, this.totalResults, this.totalPages, this.results});
@@ -12,9 +12,9 @@ class MovieSearchData {
     totalResults = json['total_results'];
     totalPages = json['total_pages'];
     if (json['results'] != null) {
-      results = new List<Results>();
+      results = new List<MovieInfo>();
       json['results'].forEach((v) {
-        results.add(new Results.fromJson(v));
+        results.add(new MovieInfo.fromJson(v));
       });
     }
   }
@@ -31,13 +31,13 @@ class MovieSearchData {
   }
 }
 
-class Results {
+class MovieInfo {
   int voteCount;
   int id;
   bool video;
-  int voteAverage;
+  dynamic voteAverage;
   String title;
-  double popularity;
+  dynamic popularity;
   String posterPath;
   String originalLanguage;
   String originalTitle;
@@ -47,7 +47,7 @@ class Results {
   String overview;
   String releaseDate;
 
-  Results(
+  MovieInfo(
       {this.voteCount,
       this.id,
       this.video,
@@ -63,7 +63,7 @@ class Results {
       this.overview,
       this.releaseDate});
 
-  Results.fromJson(Map<String, dynamic> json) {
+  MovieInfo.fromJson(Map<String, dynamic> json) {
     voteCount = json['vote_count'];
     id = json['id'];
     video = json['video'];

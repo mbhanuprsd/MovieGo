@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashPage> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(color: Colors.deepOrange),
+            decoration: BoxDecoration(color: Color(0xFF4E342E)),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       CircleAvatar(
-                        backgroundColor: Colors.deepOrange,
+                        backgroundColor: Color(0xFF4E342E),
                         radius: 50.0,
                         child: Icon(
                           Icons.movie_filter,
@@ -61,7 +61,9 @@ class _SplashScreenState extends State<SplashPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CircularProgressIndicator(),
+                    CircularProgressIndicator(
+                      backgroundColor: Color(0xFF4E342E),
+                    ),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0),
                     ),
