@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashPage> {
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(color: Color(0xFF4E342E)),
+            decoration: BoxDecoration(),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -62,7 +62,8 @@ class _SplashScreenState extends State<SplashPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     CircularProgressIndicator(
-                      backgroundColor: Color(0xFF4E342E),
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0),

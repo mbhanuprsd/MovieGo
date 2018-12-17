@@ -25,7 +25,7 @@ class MovieListItem extends StatelessWidget {
                   size: 80.0,
                 )
               : CachedNetworkImage(
-                  imageUrl: ImageUtils.GetFullImagePath(movieInfo.posterPath),
+                  imageUrl: ImageUtils.getFullImagePath(movieInfo.posterPath),
                   placeholder: new CircularProgressIndicator(),
                   errorWidget: new Icon(Icons.error),
                   height: 80.0,
