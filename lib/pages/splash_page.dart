@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/utils/navigator_util.dart';
 
@@ -12,7 +13,12 @@ class _SplashScreenState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () => MyNavigator.goToHome(context));
+    Timer(Duration(seconds: 3), () {
+      FirebaseAuth.instance
+          .currentUser()
+          .then((user) => MyNavigator.goToHome(context))
+          .catchError((e) => MyNavigator.goToLogin(context));
+    });
   }
 
   @override
