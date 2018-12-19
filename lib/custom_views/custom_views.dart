@@ -32,6 +32,33 @@ class CustomText extends Text {
       maximumLines == null ? super.overflow : TextOverflow.ellipsis;
 }
 
+class CenterText extends Text {
+  final double size;
+  final bool isBold;
+  final Color textColor;
+  final int maximumLines;
+
+  CenterText(
+      String data, this.size, this.isBold, this.textColor, this.maximumLines)
+      : super(data);
+
+  @override
+  TextStyle get style => TextStyle(
+      fontSize: size,
+      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+      color: textColor);
+
+  @override
+  int get maxLines => maximumLines == null ? super.maxLines : maximumLines;
+
+  @override
+  TextOverflow get overflow =>
+      maximumLines == null ? super.overflow : TextOverflow.ellipsis;
+
+  @override
+  TextAlign get textAlign => TextAlign.center;
+}
+
 typedef void RatingChangeCallback(double rating);
 
 class StarRating extends StatelessWidget {

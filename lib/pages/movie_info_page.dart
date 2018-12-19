@@ -70,11 +70,11 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Image(
-                              image: CachedNetworkImageProvider(
-                                ImageUtils.getFullImagePath(
-                                    movieInfo.posterPath),
-                              ),
+                            CachedNetworkImage(
+                              imageUrl: ImageUtils.getFullImagePath(
+                                  movieInfo.posterPath),
+                              placeholder: new CircularProgressIndicator(),
+                              errorWidget: new Icon(Icons.movie_filter),
                               height: 200.0,
                             ),
                             Padding(
@@ -84,8 +84,16 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  CustomText(_movieDetails.originalTitle, 20.0,
-                                      true, Colors.white, 2),
+                                  CustomText(
+                                      _movieDetails.originalTitle ==
+                                              _movieDetails.title
+                                          ? _movieDetails.originalTitle
+                                          : _movieDetails.originalTitle +
+                                              " (${_movieDetails.title})",
+                                      20.0,
+                                      true,
+                                      Colors.white,
+                                      2),
                                   Padding(
                                     padding: EdgeInsets.only(top: 10.0),
                                   ),
@@ -95,6 +103,9 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                                       false,
                                       Colors.white,
                                       null),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10.0),
+                                  ),
                                   StarRating(
                                     starCount: 5,
                                     rating: _movieDetails.voteAverage / 2.0,
@@ -105,6 +116,11 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                                       false,
                                       Colors.white,
                                       null),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20.0),
+                                  ),
+                                  CustomText("Genre : $generes", 16.0, false,
+                                      Colors.white, 2),
                                 ],
                               ),
                             ),
@@ -118,27 +134,37 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
-                        CustomText("Genre : $generes", 16.0, false,
-                            Colors.white, null),
+                        CustomText("Cast :", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 240.0,
+                          child: (castCrewDetails?.cast == null ||
+                                  castCrewDetails?.cast?.length == 0)
+                              ? Center(child: CustomProgress(context))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: castCrewDetails.cast.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new CastItem(
+                                        castCrewDetails.cast[index]);
+                                  }),
+                        ),
                         Padding(
-                          padding: EdgeInsets.only(top: 20.0),
+                          padding: EdgeInsets.only(top: 2.0),
                         ),
                         CustomText("Crew :", 20.0, true, Colors.white, null),
-                        (castCrewDetails?.crew == null ||
-                                castCrewDetails?.crew?.length == 0)
-                            ? Center(
-                                child: CustomText(
-                                    "No Crew", 16.0, false, Colors.white, 1))
-                            : GridView.count(
-                                crossAxisCount: 1,
-                                scrollDirection: Axis.horizontal,
-                                physics: ScrollPhysics(),
-                                children: List.generate(
-                                    castCrewDetails.crew.length, (index) {
-                                  return new CrewItem(
-                                      castCrewDetails.crew[index]);
-                                }),
-                              ),
+                        Container(
+                          height: 240.0,
+                          child: (castCrewDetails?.crew == null ||
+                                  castCrewDetails?.crew?.length == 0)
+                              ? Center(child: CustomProgress(context))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: castCrewDetails.crew.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new CrewItem(
+                                        castCrewDetails.crew[index]);
+                                  }),
+                        ),
                       ],
                     ),
                   ),
