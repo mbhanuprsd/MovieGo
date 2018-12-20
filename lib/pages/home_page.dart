@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/models/custom_models.dart';
+import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
+
+FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,10 +15,11 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   FirebaseUser curentUser;
+
   @override
   void initState() {
     super.initState();
-    FirebaseAuth.instance.currentUser().then((user) {
+    _auth.currentUser().then((user) {
       curentUser = user;
       setState(() {});
     });
@@ -23,16 +27,26 @@ class HomePageState extends State<HomePage> {
 
   final drawerItems = [
     new DrawerItem("Search", Icons.search),
-    new DrawerItem("Settings", Icons.settings)
+    new DrawerItem("Settings", Icons.settings),
+    new DrawerItem("Logout", Icons.exit_to_app)
   ];
 
-  _onSelectItem(int index) {
+  _onSelectItem(BuildContext bldContext, int index) {
     print(index);
     switch (index) {
       case 0:
         MyNavigator.goToSearch(context);
         break;
       case 1:
+        AppUtils.showAlert(context, "Settings", null, "Ok", () {});
+        break;
+      case 2:
+        _auth.signOut().then((_) {
+          AppUtils.showContionalAlert(
+              context, "Do you want to logout?", null, "Yes", () {
+            MyNavigator.goToLogin(context);
+          }, "No", () => Navigator.of(context).pop());
+        });
         break;
     }
   }
@@ -56,7 +70,7 @@ class HomePageState extends State<HomePage> {
         ),
         selected: i == _selectedIndex,
         onTap: () {
-          _onSelectItem(i);
+          _onSelectItem(context, i);
         },
       ));
     }

@@ -8,8 +8,10 @@ import 'package:movie_go/pages/signup_page.dart';
 
 class MyNavigator {
   static void goToLogin(BuildContext context) {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false);
   }
 
   static void goToSignUp(BuildContext context) {

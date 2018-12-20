@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
+import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/cast_crew_item.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/models/movie_details.dart';
@@ -25,11 +26,16 @@ class MovieInfoPageState extends State<MovieInfoPage> {
   MovieDetails _movieDetails;
   String generes;
   CastCrewDetails castCrewDetails;
+  bool isBookmarked;
 
   @override
   void initState() {
     super.initState();
     fetchMovieDetails();
+    FireStoreManager.isMovieBookMarked(movieInfo.id).then((marked) {
+      isBookmarked = marked;
+      setState(() {});
+    });
   }
 
   @override
@@ -39,8 +45,12 @@ class MovieInfoPageState extends State<MovieInfoPage> {
         title: Text(movieInfo?.title),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.favorite_border),
-            onPressed: toggleMovieFavourite,
+            icon: Icon(isBookmarked ? Icons.favorite : Icons.favorite_border),
+            onPressed: () {
+              FireStoreManager.toggleBookMark(movieInfo.id).then((_) {
+                isBookmarked = !isBookmarked;
+              });
+            },
           ),
         ],
       ),
