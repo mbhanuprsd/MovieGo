@@ -1,8 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/utils/image_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 double imageHeight = 150.0;
 
@@ -27,11 +27,16 @@ class CastItem extends StatelessWidget {
             (castInfo.profilePath == null)
                 ? Icon(
                     Icons.account_circle,
+                    color: Theme.of(context).primaryColor,
                     size: 120.0,
                   )
                 : CachedNetworkImage(
                     imageUrl: ImageUtils.getFullImagePath(castInfo.profilePath),
-                    placeholder: new CircularProgressIndicator(),
+                    placeholder: Icon(
+                      Icons.account_circle,
+                      color: Theme.of(context).primaryColor,
+                      size: 120.0,
+                    ),
                     errorWidget: new Icon(Icons.error),
                     height: 120.0,
                   ),
@@ -69,11 +74,16 @@ class CrewItem extends StatelessWidget {
             (crewInfo.profilePath == null)
                 ? Icon(
                     Icons.account_circle,
+                    color: Theme.of(context).primaryColor,
                     size: 120.0,
                   )
                 : CachedNetworkImage(
                     imageUrl: ImageUtils.getFullImagePath(crewInfo.profilePath),
-                    placeholder: new CircularProgressIndicator(),
+                    placeholder: Icon(
+                      Icons.account_circle,
+                      color: Theme.of(context).primaryColor,
+                      size: 120.0,
+                    ),
                     errorWidget: new Icon(Icons.error),
                     height: 120.0,
                   ),

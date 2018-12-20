@@ -22,13 +22,19 @@ class HomePageState extends State<HomePage> {
   }
 
   final drawerItems = [
-    new DrawerItem("Aeroplane", Icons.local_airport),
-    new DrawerItem("Pizza", Icons.local_pizza),
-    new DrawerItem("Coffee", Icons.local_cafe)
+    new DrawerItem("Search", Icons.search),
+    new DrawerItem("Settings", Icons.settings)
   ];
 
   _onSelectItem(int index) {
     print(index);
+    switch (index) {
+      case 0:
+        MyNavigator.goToSearch(context);
+        break;
+      case 1:
+        break;
+    }
   }
 
   @override
@@ -37,7 +43,10 @@ class HomePageState extends State<HomePage> {
     for (var i = 0; i < drawerItems.length; i++) {
       var d = drawerItems[i];
       drawerOptions.add(new ListTile(
-        leading: new Icon(d.icon),
+        leading: new Icon(
+          d.icon,
+          color: Theme.of(context).accentColor,
+        ),
         title: new Text(
           d.title,
           style: new TextStyle(
@@ -46,7 +55,9 @@ class HomePageState extends State<HomePage> {
               color: Theme.of(context).accentColor),
         ),
         selected: i == _selectedIndex,
-        onTap: () => _onSelectItem(i),
+        onTap: () {
+          _onSelectItem(i);
+        },
       ));
     }
 
@@ -60,20 +71,14 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () => MyNavigator.goToSearch(context),
-          ),
-        ],
       ),
       drawer: new Drawer(
         child: new Column(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-              accountName: CustomText(curentUser.displayName, 18.0, true,
+              accountName: CustomText(curentUser?.displayName, 18.0, true,
                   Theme.of(context).primaryColor, 2),
-              accountEmail: CustomText(curentUser.email, 18.0, true,
+              accountEmail: CustomText(curentUser?.email, 18.0, true,
                   Theme.of(context).primaryColor, 2),
               currentAccountPicture: IconButton(
                 icon: Icon(
@@ -83,13 +88,16 @@ class HomePageState extends State<HomePage> {
                 ),
                 onPressed: null,
               ),
-              onDetailsPressed: () {},
               decoration: BoxDecoration(color: Theme.of(context).accentColor),
+              margin: EdgeInsets.all(0.0),
             ),
-            Container(
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-              child: new Column(
-                children: drawerOptions,
+            Expanded(
+              child: Container(
+                decoration:
+                    BoxDecoration(color: Theme.of(context).primaryColor),
+                child: new Column(
+                  children: drawerOptions,
+                ),
               ),
             ),
           ],

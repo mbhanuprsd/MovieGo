@@ -35,11 +35,20 @@ class MovieSearchPageState extends State<MovieSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          maxLines: 1,
-          onChanged: (str) {
-            searchString = str;
-          },
+        title: Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      color: Theme.of(context).accentColor, width: 3.0))),
+          child: TextField(
+            maxLines: 1,
+            onChanged: (str) {
+              searchString = str;
+            },
+            autofocus: true,
+            style:
+                TextStyle(fontSize: 20.0, color: Theme.of(context).accentColor),
+          ),
         ),
         actions: <Widget>[
           searching

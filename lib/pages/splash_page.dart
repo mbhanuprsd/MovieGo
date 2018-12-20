@@ -14,10 +14,13 @@ class _SplashScreenState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 3), () {
-      FirebaseAuth.instance
-          .currentUser()
-          .then((user) => MyNavigator.goToHome(context))
-          .catchError((e) => MyNavigator.goToLogin(context));
+      FirebaseAuth.instance.currentUser().then((user) {
+        if (user == null) {
+          MyNavigator.goToLogin(context);
+        } else {
+          MyNavigator.goToHome(context);
+        }
+      }).catchError((e) => MyNavigator.goToLogin(context));
     });
   }
 

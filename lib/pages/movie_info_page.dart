@@ -37,6 +37,12 @@ class MovieInfoPageState extends State<MovieInfoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(movieInfo?.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.favorite_border),
+            onPressed: toggleMovieFavourite,
+          ),
+        ],
       ),
       body: _movieDetails == null
           ? Center(
@@ -139,7 +145,15 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                           height: 240.0,
                           child: (castCrewDetails?.cast == null ||
                                   castCrewDetails?.cast?.length == 0)
-                              ? Center(child: CustomProgress(context))
+                              ? castCrewDetails == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText(
+                                          "Not Available",
+                                          20.0,
+                                          true,
+                                          Theme.of(context).primaryColor,
+                                          1))
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: castCrewDetails.cast.length,
@@ -156,7 +170,15 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                           height: 240.0,
                           child: (castCrewDetails?.crew == null ||
                                   castCrewDetails?.crew?.length == 0)
-                              ? Center(child: CustomProgress(context))
+                              ? castCrewDetails == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText(
+                                          "Not Available",
+                                          20.0,
+                                          true,
+                                          Theme.of(context).primaryColor,
+                                          1))
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: castCrewDetails.crew.length,
@@ -207,4 +229,6 @@ class MovieInfoPageState extends State<MovieInfoPage> {
       });
     });
   }
+
+  void toggleMovieFavourite() {}
 }
