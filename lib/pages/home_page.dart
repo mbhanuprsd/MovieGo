@@ -41,7 +41,7 @@ class HomePageState extends State<HomePage> {
     new DrawerItem("Logout", Icons.exit_to_app)
   ];
 
-  _onSelectItem(BuildContext bldContext, int index) {
+  _onSelectItem(int index) {
     print(index);
     switch (index) {
       case 0:
@@ -63,26 +63,30 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> drawerOptions = List();
-    for (var i = 0; i < drawerItems.length; i++) {
-      var d = drawerItems[i];
-      drawerOptions.add(new ListTile(
-        leading: new Icon(
-          d.icon,
-          color: Theme.of(context).accentColor,
-        ),
-        title: new Text(
-          d.title,
-          style: new TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
-              color: Theme.of(context).accentColor),
-        ),
-        selected: i == _selectedIndex,
-        onTap: () {
-          _onSelectItem(context, i);
-        },
-      ));
+    List<Widget> getDrawerOptions(BuildContext bldContext) {
+      List<Widget> drawerOptions = List();
+      for (var i = 0; i < drawerItems.length; i++) {
+        var d = drawerItems[i];
+        drawerOptions.add(new ListTile(
+          leading: new Icon(
+            d.icon,
+            color: Theme.of(context).accentColor,
+          ),
+          title: new Text(
+            d.title,
+            style: new TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).accentColor),
+          ),
+          selected: i == _selectedIndex,
+          onTap: () {
+            Navigator.of(bldContext).pop();
+            _onSelectItem(i);
+          },
+        ));
+      }
+      return drawerOptions;
     }
 
     return new Scaffold(
@@ -120,7 +124,7 @@ class HomePageState extends State<HomePage> {
                 decoration:
                     BoxDecoration(color: Theme.of(context).primaryColor),
                 child: new Column(
-                  children: drawerOptions,
+                  children: getDrawerOptions(context),
                 ),
               ),
             ),
@@ -164,11 +168,9 @@ class HomePageState extends State<HomePage> {
                   Container(
                     height: 200.0,
                     child: (favMovieList == null || favMovieList?.length == 0)
-                        ? favMovieList == null
-                            ? Center(child: CustomProgress(context))
-                            : Center(
-                                child: CenterText("No Favourites", 20.0, true,
-                                    Theme.of(context).primaryColor, 1))
+                        ? Center(
+                            child: CenterText("No Favourites", 20.0, true,
+                                Theme.of(context).primaryColor, 1))
                         : ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: favMovieList.length,
@@ -187,7 +189,6 @@ class HomePageState extends State<HomePage> {
 
   fetchBookmarks() {
     Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) {
-      favMovieList = new List();
       if (qs != null && qs.documents != null && qs.documents.length > 0) {
         DocumentSnapshot docSnap = qs.documents.firstWhere(
             (doc) => doc.data.containsKey(FireStoreManager.FS_DOC_BOOKMARK));
@@ -198,6 +199,7 @@ class HomePageState extends State<HomePage> {
             List<String> strings = bookMarksString.split(',').toList();
             if (strings != null && strings.length > 0) {
               List<int> bookMarks = strings.map((id) => int.parse(id)).toList();
+              favMovieList = new List();
               for (var id in bookMarks) {
                 fetchMovieDetails(id);
               }
@@ -206,7 +208,7 @@ class HomePageState extends State<HomePage> {
           }
         }
       }
-      setState(() {});
+      favMovieList = new List();
     });
   }
 
@@ -226,6 +228,7 @@ class HomePageState extends State<HomePage> {
         setState(() {});
       }).catchError((e) {
         print(e);
+        favMovieList = new List();
         setState(() {});
       });
     });
