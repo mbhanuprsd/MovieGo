@@ -12,6 +12,10 @@ class AppUtils {
     }
   }
 
+  static showSimpleAlert(BuildContext context, String message) {
+    showAlert(context, message, null, "Ok", () => Navigator.of(context).pop());
+  }
+
   static showAlert(BuildContext context, String title, String message,
       String buttonText, Function callBack) {
     showDialog(

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
+import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
@@ -61,7 +62,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onPressed: () => validateAndSave()
                       .then((user) => MyNavigator.goToHome(context))
-                      .catchError((e) => print(e)),
+                      .catchError((e) =>
+                          AppUtils.showSimpleAlert(context, e.toString())),
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 20.0),

@@ -8,31 +8,30 @@ import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/cast_crew_item.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/models/movie_details.dart';
-import 'package:movie_go/models/movie_search_model.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
 
 class MovieInfoPage extends StatefulWidget {
-  final MovieInfo movieInfo;
-  MovieInfoPage(this.movieInfo);
+  final int movieId;
+  MovieInfoPage(this.movieId);
 
   @override
-  State<StatefulWidget> createState() => MovieInfoPageState(movieInfo);
+  State<StatefulWidget> createState() => MovieInfoPageState(movieId);
 }
 
 class MovieInfoPageState extends State<MovieInfoPage> {
-  MovieInfo movieInfo;
-  MovieInfoPageState(this.movieInfo);
+  int movieId;
+  MovieInfoPageState(this.movieId);
   MovieDetails _movieDetails;
   String generes;
   CastCrewDetails castCrewDetails;
-  bool isBookmarked;
+  bool isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
     fetchMovieDetails();
-    FireStoreManager.isMovieBookMarked(movieInfo.id).then((marked) {
+    FireStoreManager.isMovieBookMarked(movieId).then((marked) {
       isBookmarked = marked;
       setState(() {});
     });
@@ -42,13 +41,14 @@ class MovieInfoPageState extends State<MovieInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(movieInfo?.title),
+        title: Text(_movieDetails?.title ?? "Loading..."),
         actions: <Widget>[
           IconButton(
             icon: Icon(isBookmarked ? Icons.favorite : Icons.favorite_border),
             onPressed: () {
-              FireStoreManager.toggleBookMark(movieInfo.id).then((_) {
+              FireStoreManager.toggleBookMark(movieId).then((_) {
                 isBookmarked = !isBookmarked;
+                setState(() {});
               });
             },
           ),
@@ -65,9 +65,9 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                     image: DecorationImage(
                       image: new CachedNetworkImageProvider(
                           ImageUtils.getFullImagePath(
-                              movieInfo.backdropPath == null
-                                  ? movieInfo.posterPath
-                                  : movieInfo.backdropPath)),
+                              _movieDetails.backdropPath == null
+                                  ? _movieDetails.posterPath
+                                  : _movieDetails.backdropPath)),
                       fit: BoxFit.fitHeight,
                     ),
                   ),
@@ -88,7 +88,7 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                           children: <Widget>[
                             CachedNetworkImage(
                               imageUrl: ImageUtils.getFullImagePath(
-                                  movieInfo.posterPath),
+                                  _movieDetails.posterPath),
                               placeholder: new CircularProgressIndicator(),
                               errorWidget: new Icon(Icons.movie_filter),
                               height: 200.0,
@@ -209,32 +209,34 @@ class MovieInfoPageState extends State<MovieInfoPage> {
   fetchMovieDetails() {
     HttpClient()
         .getUrl(Uri.parse(
-            "https://api.themoviedb.org/3/movie/${movieInfo.id}?api_key=${TMDB.key}")) // produces a request object
+            "https://api.themoviedb.org/3/movie/$movieId?api_key=${TMDB.key}")) //
+        // produces a request object
         .then((request) => request.close()) // sends the request
         .then((response) {
       response.transform(utf8.decoder).join().then((detailsJson) {
-        HttpClient()
-            .getUrl(Uri.parse(
-                "https://api.themoviedb.org/3/movie/${movieInfo.id}/credits?api_key=${TMDB.key}"))
-            .then((request) => request.close())
-            .then((response) {
-          response.transform(utf8.decoder).join().then((creditsJson) {
-            Map creditsmap = json.decode(creditsJson);
-            castCrewDetails = CastCrewDetails.fromJson(creditsmap);
-            setState(() {});
-          });
-        });
+        fetchCredentials();
 
         Map mapJson = json.decode(detailsJson);
         _movieDetails = MovieDetails.fromJson(mapJson);
-        List<String> genereList = new List();
-        for (var item in _movieDetails.genres) {
-          genereList.add(item.name);
-        }
-        generes = genereList.join(', ');
+        generes = _movieDetails.genres?.map((g) => g.name)?.toList()?.join(','
+            ' ');
         setState(() {});
       }).catchError((e) {
         print(e);
+        setState(() {});
+      });
+    });
+  }
+
+  fetchCredentials() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/movie/$movieId/credits?api_key=${TMDB.key}"))
+        .then((request) => request.close())
+        .then((response) {
+      response.transform(utf8.decoder).join().then((creditsJson) {
+        Map creditsmap = json.decode(creditsJson);
+        castCrewDetails = CastCrewDetails.fromJson(creditsmap);
         setState(() {});
       });
     });
