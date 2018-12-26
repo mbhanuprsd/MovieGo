@@ -98,47 +98,11 @@ class FavMovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      child: Container(
-        width: 120.0,
-        decoration: BoxDecoration(color: Theme.of(context).accentColor),
-        child: new GestureDetector(
-          onTap: () => MyNavigator.goToMovieInfo(context, movieDetails.id),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 10.0),
-              ),
-              (movieDetails.posterPath == null)
-                  ? Icon(
-                      Icons.account_circle,
-                      color: Theme.of(context).primaryColor,
-                      size: 120.0,
-                    )
-                  : CachedNetworkImage(
-                      imageUrl:
-                          ImageUtils.getFullImagePath(movieDetails.posterPath),
-                      placeholder: Icon(
-                        Icons.local_movies,
-                        color: Theme.of(context).primaryColor,
-                        size: 120.0,
-                      ),
-                      errorWidget: new Icon(Icons.error),
-                      height: 120.0,
-                    ),
-              Padding(
-                padding: EdgeInsets.only(top: 5.0),
-              ),
-              CenterText(movieDetails.title, 16.0, true, Colors.white, 2),
-              CenterText(movieDetails.releaseDate, 14.0, true,
-                  Theme.of(context).primaryColor, 1),
-            ],
-          ),
-        ),
-      ),
-    );
+    return PosterViewItem(
+        movieDetails.posterPath,
+        movieDetails.title,
+        movieDetails.releaseDate,
+        () => MyNavigator.goToMovieInfo(context, movieDetails.id));
   }
 }
 
@@ -148,28 +112,72 @@ class FavPersonItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PosterViewItem(
+        personDetail.profilePath,
+        personDetail.name,
+        personDetail.knownForDepartment,
+        () => MyNavigator.goToPersonInfo(context, personDetail.id));
+  }
+}
+
+class PersonCastItem extends StatelessWidget {
+  final CastDetail castDetail;
+  PersonCastItem(this.castDetail);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterViewItem(
+        castDetail.posterPath,
+        castDetail.title,
+        castDetail.character,
+        () => MyNavigator.goToMovieInfo(context, castDetail.id));
+  }
+}
+
+class PersonCrewItem extends StatelessWidget {
+  final CrewDetail _crewDetail;
+  PersonCrewItem(this._crewDetail);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterViewItem(
+        _crewDetail.posterPath,
+        _crewDetail.title,
+        _crewDetail.department,
+        () => MyNavigator.goToMovieInfo(context, _crewDetail.id));
+  }
+}
+
+class PosterViewItem extends StatelessWidget {
+  final String imagePath;
+  final String title;
+  final String subTitle;
+  final Function callback;
+  PosterViewItem(this.imagePath, this.title, this.subTitle, this.callback);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 4.0,
       child: Container(
-        width: 120.0,
+        width: 150.0,
         decoration: BoxDecoration(color: Theme.of(context).accentColor),
         child: new GestureDetector(
-          onTap: () => MyNavigator.goToPersonInfo(context, personDetail.id),
+          onTap: callback,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
               ),
-              (personDetail.profilePath == null)
+              (imagePath == null)
                   ? Icon(
                       Icons.account_circle,
                       color: Theme.of(context).primaryColor,
                       size: 120.0,
                     )
                   : CachedNetworkImage(
-                      imageUrl:
-                          ImageUtils.getFullImagePath(personDetail.profilePath),
+                      imageUrl: ImageUtils.getFullImagePath(imagePath),
                       placeholder: Icon(
                         Icons.local_movies,
                         color: Theme.of(context).primaryColor,
@@ -181,9 +189,9 @@ class FavPersonItem extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(top: 5.0),
               ),
-              CenterText(personDetail.name, 16.0, true, Colors.white, 2),
-              CenterText(personDetail.knownForDepartment, 14.0, true,
-                  Theme.of(context).primaryColor, 1),
+              CenterText(title, 14.0, true, Colors.white, 2),
+              CenterText(
+                  subTitle, 14.0, true, Theme.of(context).primaryColor, 2),
             ],
           ),
         ),

@@ -5,10 +5,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
+import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/models/person_images_response.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
+import 'package:movie_go/utils/navigator_util.dart';
 
 class PeopleInfoPage extends StatefulWidget {
   final int peopleId;
@@ -25,6 +27,7 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
   bool isBookmarked = false;
   String aliases;
   List<String> images;
+  MovieCredits _movieCredits;
 
   @override
   void initState() {
@@ -38,10 +41,15 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("${_personDetail?.name} : $peopleId");
     return Scaffold(
       appBar: AppBar(
         title: Text(_personDetail?.name ?? "Loading..."),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () => MyNavigator.goToHome(context),
+          ),
           IconButton(
             icon: Icon(isBookmarked ? Icons.favorite : Icons.favorite_border),
             onPressed: () {
@@ -190,6 +198,56 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                                     );
                                   }),
                         ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                        ),
+                        CustomText("Cast:", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 240.0,
+                          child: (_movieCredits?.cast == null ||
+                                  _movieCredits?.cast?.length == 0)
+                              ? _movieCredits == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText(
+                                          "Not Available",
+                                          20.0,
+                                          true,
+                                          Theme.of(context).primaryColor,
+                                          1))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _movieCredits.cast.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new PersonCastItem(
+                                        _movieCredits.cast[index]);
+                                  }),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
+                        ),
+                        CustomText("Crew:", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 240.0,
+                          child: (_movieCredits?.crew == null ||
+                                  _movieCredits?.crew?.length == 0)
+                              ? _movieCredits == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText(
+                                          "Not Available",
+                                          20.0,
+                                          true,
+                                          Theme.of(context).primaryColor,
+                                          1))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _movieCredits.crew.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new PersonCrewItem(
+                                        _movieCredits.crew[index]);
+                                  }),
+                        ),
                       ],
                     ),
                   ),
@@ -201,12 +259,13 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
 
   fetchPersonDetails() {
     HttpClient()
-        .getUrl(Uri.parse("https://api.themoviedb"
-            ".org/3/person/$peopleId?api_key=${TMDB.key}&language=en-US"))
+        .getUrl(Uri.parse("https://api.themoviedb.org/3/person/"
+            "$peopleId?api_key=${TMDB.key}&language=en-US"))
         .then((request) => request.close()) // sends the request
         .then((response) {
       response.transform(utf8.decoder).join().then((detailsJson) {
         fetchImages();
+        fetchMovieCredits();
 
         Map mapJson = json.decode(detailsJson);
         _personDetail = PersonDetail.fromJson(mapJson);
@@ -233,6 +292,24 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
       }).catchError((e) {
         print(e);
         images = new List();
+        setState(() {});
+      });
+    });
+  }
+
+  fetchMovieCredits() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/person/$peopleId/movie_credits?api_key"
+            "=${TMDB.key}&language=en-US"))
+        .then((request) => request.close()) // sends the request
+        .then((response) {
+      response.transform(utf8.decoder).join().then((detailsJson) {
+        Map mapJson = json.decode(detailsJson);
+        _movieCredits = MovieCredits.fromJson(mapJson);
+        setState(() {});
+      }).catchError((e) {
+        print(e);
         setState(() {});
       });
     });

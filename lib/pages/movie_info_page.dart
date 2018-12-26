@@ -10,6 +10,7 @@ import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
+import 'package:movie_go/utils/navigator_util.dart';
 
 class MovieInfoPage extends StatefulWidget {
   final int movieId;
@@ -39,10 +40,15 @@ class MovieInfoPageState extends State<MovieInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("${_movieDetails?.title} : $movieId");
     return Scaffold(
       appBar: AppBar(
         title: Text(_movieDetails?.title ?? "Loading..."),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () => MyNavigator.goToHome(context),
+          ),
           IconButton(
             icon: Icon(isBookmarked ? Icons.favorite : Icons.favorite_border),
             onPressed: () {

@@ -20,8 +20,10 @@ class MyNavigator {
   }
 
   static void goToHome(BuildContext context) {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+        (Route<dynamic> route) => false);
   }
 
   static void goToSearch(BuildContext context) {
