@@ -110,6 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
       UserUpdateInfo userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.displayName = _fullName;
       await user.updateProfile(userUpdateInfo);
+      user.sendEmailVerification();
       return user;
     } else {
       throw new Exception("Inavlid form");

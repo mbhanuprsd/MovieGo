@@ -46,7 +46,7 @@ class MovieInfoPageState extends State<MovieInfoPage> {
           IconButton(
             icon: Icon(isBookmarked ? Icons.favorite : Icons.favorite_border),
             onPressed: () {
-              FireStoreManager.toggleBookMark(movieId).then((_) {
+              FireStoreManager.toggleMovieBookMark(movieId).then((_) {
                 isBookmarked = !isBookmarked;
                 setState(() {});
               });
@@ -241,6 +241,4 @@ class MovieInfoPageState extends State<MovieInfoPage> {
       });
     });
   }
-
-  void toggleMovieFavourite() {}
 }

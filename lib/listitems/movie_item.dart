@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/movie_search_model.dart';
+import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
 
@@ -91,9 +92,9 @@ class MovieListItem extends StatelessWidget {
   }
 }
 
-class FavItem extends StatelessWidget {
+class FavMovieItem extends StatelessWidget {
   final MovieDetails movieDetails;
-  FavItem(this.movieDetails);
+  FavMovieItem(this.movieDetails);
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +133,56 @@ class FavItem extends StatelessWidget {
               ),
               CenterText(movieDetails.title, 16.0, true, Colors.white, 2),
               CenterText(movieDetails.releaseDate, 14.0, true,
+                  Theme.of(context).primaryColor, 1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FavPersonItem extends StatelessWidget {
+  final PersonDetail personDetail;
+  FavPersonItem(this.personDetail);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4.0,
+      child: Container(
+        width: 120.0,
+        decoration: BoxDecoration(color: Theme.of(context).accentColor),
+        child: new GestureDetector(
+          onTap: () => MyNavigator.goToPersonInfo(context, personDetail.id),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              (personDetail.profilePath == null)
+                  ? Icon(
+                      Icons.account_circle,
+                      color: Theme.of(context).primaryColor,
+                      size: 120.0,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl:
+                          ImageUtils.getFullImagePath(personDetail.profilePath),
+                      placeholder: Icon(
+                        Icons.local_movies,
+                        color: Theme.of(context).primaryColor,
+                        size: 120.0,
+                      ),
+                      errorWidget: new Icon(Icons.error),
+                      height: 120.0,
+                    ),
+              Padding(
+                padding: EdgeInsets.only(top: 5.0),
+              ),
+              CenterText(personDetail.name, 16.0, true, Colors.white, 2),
+              CenterText(personDetail.knownForDepartment, 14.0, true,
                   Theme.of(context).primaryColor, 1),
             ],
           ),

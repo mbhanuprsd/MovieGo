@@ -9,6 +9,7 @@ import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/custom_models.dart';
 import 'package:movie_go/models/movie_details.dart';
+import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
@@ -24,6 +25,7 @@ class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   FirebaseUser curentUser;
   List<MovieDetails> favMovieList;
+  List<PersonDetail> favPersonList;
 
   @override
   void initState() {
@@ -99,6 +101,12 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: fetchBookmarks,
+          ),
+        ],
       ),
       drawer: new Drawer(
         child: new Column(
@@ -161,7 +169,7 @@ class HomePageState extends State<HomePage> {
                   Padding(
                     padding: EdgeInsets.only(top: 30.0),
                   ),
-                  CustomText("Favorites:", 20.0, true, Colors.white, 1),
+                  CustomText("Favorite Movies:", 20.0, true, Colors.white, 1),
                   Padding(
                     padding: EdgeInsets.only(top: 20.0),
                   ),
@@ -175,7 +183,27 @@ class HomePageState extends State<HomePage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: favMovieList.length,
                             itemBuilder: (ctxt, index) {
-                              return new FavItem(favMovieList[index]);
+                              return new FavMovieItem(favMovieList[index]);
+                            }),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.0),
+                  ),
+                  CustomText("Favorite People:", 20.0, true, Colors.white, 1),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                  ),
+                  Container(
+                    height: 200.0,
+                    child: (favPersonList == null || favPersonList?.length == 0)
+                        ? Center(
+                            child: CenterText("No Favourites", 20.0, true,
+                                Theme.of(context).primaryColor, 1))
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: favPersonList.length,
+                            itemBuilder: (ctxt, index) {
+                              return new FavPersonItem(favPersonList[index]);
                             }),
                   ),
                 ],
@@ -187,29 +215,62 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  bool bookmarksAvailable = false;
   fetchBookmarks() {
     Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) {
-      if (qs != null && qs.documents != null && qs.documents.length > 0) {
-        DocumentSnapshot docSnap = qs.documents.firstWhere(
-            (doc) => doc.data.containsKey(FireStoreManager.fsBookmarkDoc));
-        if (docSnap != null) {
-          String bookMarksString =
-              docSnap.data[FireStoreManager.fsBookmarkDoc].toString();
-          if (bookMarksString.length > 0) {
-            List<String> strings = bookMarksString.split(',').toList();
-            if (strings != null && strings.length > 0) {
-              List<int> bookMarks = strings.map((id) => int.parse(id)).toList();
-              favMovieList = new List();
-              for (var id in bookMarks) {
-                fetchMovieDetails(id);
-              }
-              return;
+      fetchMovieBookmarks(qs);
+      fetchPeopleBookmarks(qs);
+    });
+  }
+
+  void fetchPeopleBookmarks(QuerySnapshot qs) {
+    bookmarksAvailable = false;
+    if (qs != null && qs.documents != null && qs.documents.length > 0) {
+      DocumentSnapshot docSnap = qs.documents?.firstWhere((doc) =>
+          doc?.data?.containsKey(FireStoreManager.fsPersonBookmarkDoc));
+      if (docSnap != null) {
+        String bookMarksString =
+            docSnap.data[FireStoreManager.fsPersonBookmarkDoc].toString();
+        if (bookMarksString.length > 0) {
+          List<String> strings = bookMarksString.split(',').toList();
+          if (strings != null && strings.length > 0) {
+            List<int> bookMarks = strings.map((id) => int.parse(id)).toList();
+            favPersonList = new List();
+            for (var id in bookMarks) {
+              fetchPersonDetails(id);
             }
+            bookmarksAvailable = true;
           }
         }
       }
-      favMovieList = new List();
-    });
+    }
+    if (!bookmarksAvailable) favPersonList = new List();
+    bookmarksAvailable = false;
+  }
+
+  void fetchMovieBookmarks(QuerySnapshot qs) {
+    bookmarksAvailable = false;
+    if (qs != null && qs.documents != null && qs.documents.length > 0) {
+      DocumentSnapshot docSnap = qs.documents?.firstWhere(
+          (doc) => doc?.data?.containsKey(FireStoreManager.fsMovieBookmarkDoc));
+      if (docSnap != null) {
+        String bookMarksString =
+            docSnap.data[FireStoreManager.fsMovieBookmarkDoc].toString();
+        if (bookMarksString.length > 0) {
+          List<String> strings = bookMarksString.split(',').toList();
+          if (strings != null && strings.length > 0) {
+            List<int> bookMarks = strings.map((id) => int.parse(id)).toList();
+            favMovieList = new List();
+            for (var id in bookMarks) {
+              fetchMovieDetails(id);
+            }
+            bookmarksAvailable = true;
+          }
+        }
+      }
+    }
+    if (!bookmarksAvailable) favMovieList = new List();
+    bookmarksAvailable = false;
   }
 
   fetchMovieDetails(int movieId) {
@@ -229,6 +290,27 @@ class HomePageState extends State<HomePage> {
       }).catchError((e) {
         print(e);
         favMovieList = new List();
+        setState(() {});
+      });
+    });
+  }
+
+  fetchPersonDetails(int personId) {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/person/$personId?api_key=${TMDB.key}&language=en-US"))
+        .then((request) => request.close()) // sends the request
+        .then((response) {
+      response.transform(utf8.decoder).join().then((detailsJson) {
+        Map mapJson = json.decode(detailsJson);
+        PersonDetail _personDetails = PersonDetail.fromJson(mapJson);
+        favPersonList.add(_personDetails);
+        favPersonList = favPersonList.toSet().toList();
+        favPersonList.sort((a, b) => b.id.compareTo(a.id));
+        setState(() {});
+      }).catchError((e) {
+        print(e);
+        favPersonList = new List();
         setState(() {});
       });
     });

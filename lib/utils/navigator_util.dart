@@ -3,6 +3,7 @@ import 'package:movie_go/pages/home_page.dart';
 import 'package:movie_go/pages/login_page.dart';
 import 'package:movie_go/pages/movie_info_page.dart';
 import 'package:movie_go/pages/movie_search_page.dart';
+import 'package:movie_go/pages/people_info_page.dart';
 import 'package:movie_go/pages/signup_page.dart';
 
 class MyNavigator {
@@ -31,5 +32,10 @@ class MyNavigator {
   static void goToMovieInfo(BuildContext context, int movieId) {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => MovieInfoPage(movieId)));
+  }
+
+  static void goToPersonInfo(BuildContext context, int personId) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => PeopleInfoPage(personId)));
   }
 }
