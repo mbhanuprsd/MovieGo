@@ -3,19 +3,22 @@ import 'package:movie_go/pages/splash_page.dart';
 
 void main() => runApp(MyApp());
 
+var primaryColor = Colors.orange;
+var accentColor = Colors.brown;
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MovieGo',
       theme: ThemeData(
-        primarySwatch: Colors.amber,
-        accentColor: Color(0xFF4E342E),
-        scaffoldBackgroundColor: Color(0xFF4E342E),
-        hintColor: Colors.amber,
+        primarySwatch: primaryColor,
+        accentColor: accentColor,
+        scaffoldBackgroundColor: accentColor,
+        hintColor: primaryColor,
         buttonTheme: ButtonThemeData(
-          buttonColor: Colors.amber,
-          highlightColor: Color(0xFF4E342E),
+          buttonColor: primaryColor,
+          highlightColor: accentColor,
           height: 50.0,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),

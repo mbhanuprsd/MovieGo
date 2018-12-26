@@ -43,11 +43,11 @@ class _SplashScreenState extends State<SplashPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       CircleAvatar(
-                        backgroundColor: Color(0xFF4E342E),
+                        backgroundColor: Theme.of(context).accentColor,
                         radius: 50.0,
                         child: Icon(
                           Icons.movie_filter,
-                          color: Colors.amber,
+                          color: Theme.of(context).primaryColor,
                           size: 50.0,
                         ),
                       ),

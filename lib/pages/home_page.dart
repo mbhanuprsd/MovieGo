@@ -76,7 +76,7 @@ class HomePageState extends State<HomePage> {
             d.title,
             style: new TextStyle(
                 fontSize: 18.0,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.bold,
                 color: Theme.of(context).accentColor),
           ),
           selected: i == _selectedIndex,
@@ -105,9 +105,9 @@ class HomePageState extends State<HomePage> {
           children: <Widget>[
             new UserAccountsDrawerHeader(
               accountName: CustomText(curentUser?.displayName ?? "", 18.0, true,
-                  Theme.of(context).primaryColor, 2),
+                  Theme.of(context).primaryColor, 1),
               accountEmail: CustomText(curentUser?.email ?? "", 18.0, true,
-                  Theme.of(context).primaryColor, 2),
+                  Theme.of(context).primaryColor, 1),
               currentAccountPicture: IconButton(
                 icon: Icon(
                   Icons.account_circle,
@@ -191,10 +191,10 @@ class HomePageState extends State<HomePage> {
     Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) {
       if (qs != null && qs.documents != null && qs.documents.length > 0) {
         DocumentSnapshot docSnap = qs.documents.firstWhere(
-            (doc) => doc.data.containsKey(FireStoreManager.FS_DOC_BOOKMARK));
+            (doc) => doc.data.containsKey(FireStoreManager.fsBookmarkDoc));
         if (docSnap != null) {
           String bookMarksString =
-              docSnap.data[FireStoreManager.FS_DOC_BOOKMARK].toString();
+              docSnap.data[FireStoreManager.fsBookmarkDoc].toString();
           if (bookMarksString.length > 0) {
             List<String> strings = bookMarksString.split(',').toList();
             if (strings != null && strings.length > 0) {

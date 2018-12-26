@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FireStoreManager {
-  static String FS_DOC_BOOKMARK = "Bookmarks";
+  static String fsBookmarkDoc = "Bookmarks";
 
   static Future<List<int>> fetchBookmarks() async {
     List<int> bookMarks = new List();
@@ -13,10 +13,10 @@ class FireStoreManager {
       DocumentSnapshot bookmarkSnap = qs?.documents?.first;
       if (bookmarkSnap != null) {
         Map<String, dynamic> data = bookmarkSnap.data;
-        if (data.containsKey(FS_DOC_BOOKMARK) &&
-            data[FS_DOC_BOOKMARK].toString().length > 0) {
+        if (data.containsKey(fsBookmarkDoc) &&
+            data[fsBookmarkDoc].toString().length > 0) {
           List<String> strings =
-              data[FS_DOC_BOOKMARK].toString().split(',').toList();
+              data[fsBookmarkDoc].toString().split(',').toList();
           if (strings != null && strings.length > 0) {
             bookMarks = strings.map((id) => int.parse(id)).toList();
           }
@@ -36,7 +36,7 @@ class FireStoreManager {
     }
 
     Map<String, dynamic> bookmarkMap = new Map();
-    bookmarkMap[FS_DOC_BOOKMARK] = bookMarks.join(',');
+    bookmarkMap[fsBookmarkDoc] = bookMarks.join(',');
 
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     QuerySnapshot qs =
