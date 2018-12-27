@@ -38,7 +38,7 @@ matrix:
         - google-gdk-license-.+
       os: linux
       script:
-        - "./flutter/bin/flutter -v build apk"
+        - "flutter/bin/flutter -v build apk"
       sudo: false
     -
       before_install:
@@ -55,4 +55,4 @@ matrix:
       os: osx
       osx_image: xcode8.3
       script:
-        - "./flutter/bin/flutter -v build ios --no-codesign"
+        - "flutter/bin/flutter -v build ios --no-codesign"
