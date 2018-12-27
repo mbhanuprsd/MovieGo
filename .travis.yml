@@ -52,8 +52,4 @@ matrix:
     - flutter build ios --no-codesign
 before_install:
 - openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
-  -in GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -d
-- openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
-  -in tmdb.dart.enc -out lib/tmdb.dart -d
-- openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
-  -in google-services.json.enc -out android/app/google-services.json -d
+  -in secrets.tar.enc -out secrets.tar -d
