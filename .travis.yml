@@ -31,8 +31,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
       before_install:
-        - openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d
-        - tar xvf secrets.tar
+        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
+        - "tar xvf secrets.tar"
+        - "chmod +x gradlew"
       before_script:
         - ./scripts/before_build_apks.sh
         - "export ANDROID_HOME=$HOME/android-sdk"
@@ -42,10 +43,14 @@ matrix:
       jdk: oraclejdk8
       os: linux
       script:
+        - "./gradlew assembleRelease --stacktrace"
         - "cd ./example"
         - "flutter build apk"
       sudo: false
     -
+      before_install:
+        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
+        - "tar xvf secrets.tar"
       before_script:
         - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
