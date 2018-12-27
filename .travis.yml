@@ -30,9 +30,6 @@ matrix:
             - fonts-droid
           sources: 
             - ubuntu-toolchain-r-test
-      before_install: 
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in google-services.json.enc -out android/app/google-services.json -d"
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in tmdb.dart.enc -out lib/tmdb.dart -d"
       before_script: 
         - ./scripts/before_build_apks.sh
         - "export ANDROID_HOME=$HOME/android-sdk"
@@ -46,9 +43,6 @@ matrix:
         - "flutter build apk"
       sudo: false
     - # Job 2) Build the example binary for iOS (IPA)
-      before_install: 
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -d"
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in tmdb.dart.enc -out lib/tmdb.dart -d"
       before_script: 
         - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
