@@ -15,9 +15,9 @@ matrix:
         components:
           - tools
           - platform-tools
-          - build-tools-25.0.3
-          - android-25
-          - sys-img-armeabi-v7a-google_apis-25
+          - build-tools-27.0.3
+          - android-27
+          - sys-img-armeabi-v7a-google_apis-27
           - extra-android-m2repository
           - extra-google-m2repository
           - extra-google-android-support
@@ -39,22 +39,23 @@ matrix:
         - google-gdk-license-.+
       os: linux
       script:
-        - "flutter -v build apk"
+        - "flutter build apk"
       sudo: false
     -
       before_install:
         - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "tar xvf secrets.tar"
       before_script:
-        - "pip install six"
         - "brew update"
         - "brew install --HEAD libimobiledevice"
         - "brew install ideviceinstaller"
         - "brew install ios-deploy"
+        - "brew reinstall python@2"
+        - "pip install six"
         - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
       language: generic
       os: osx
       osx_image: xcode8.3
       script:
-        - "flutter -v build ios --no-codesign"
+        - "flutter build ios --no-codesign"
