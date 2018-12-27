@@ -56,6 +56,6 @@ matrix:
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
       language: generic
       os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.2
       script:
         - "flutter build ios --no-codesign"
