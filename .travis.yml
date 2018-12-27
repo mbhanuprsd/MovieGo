@@ -14,7 +14,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
       before_script:
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
         - "flutter doctor"
@@ -34,7 +33,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
       before_script:
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - ./scripts/before_build_apks.sh
         - "export ANDROID_HOME=$HOME/android-sdk"
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
@@ -48,7 +46,6 @@ matrix:
       sudo: false
     -
       before_script:
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
       env:
