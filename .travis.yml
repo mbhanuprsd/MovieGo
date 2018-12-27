@@ -1,39 +1,58 @@
---- 
-addons: 
-  apt: 
-    packages: 
-      - libstdc++6
-      - fonts-droid
-    sources: 
-      - ubuntu-toolchain-r-test
-android: 
-  components: 
-    - tools
-    - platform-tools
-    - build-tools-25.0.3
-    - android-25
-    - sys-img-armeabi-v7a-google_apis-25
-    - extra-android-m2repository
-    - extra-google-m2repository
-    - extra-google-android-support
-before_install: 
-  - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
-  - "tar xvf secrets.tar"
-before_script: 
-  - "wget http://services.gradle.org/distributions/gradle-3.5-bin.zip"
-  - "unzip -qq gradle-3.5-bin.zip"
-  - "export GRADLE_HOME=$PWD/gradle-3.5"
-  - "export PATH=$GRADLE_HOME/bin:$PATH"
-  - "git clone https://github.com/flutter/flutter.git -b alpha --depth 1"
-cache: 
+---
+cache:
   directories: ~
-jdk: oraclejdk8
-language: android
-licenses: 
-  - android-sdk-preview-license-.+
-  - android-sdk-license-.+
-  - google-gdk-license-.+
-os: linux
-script: 
-  - "./flutter/bin/flutter -v build apk"
-sudo: false
+matrix:
+  include:
+    -
+      addons:
+        apt:
+          packages:
+            - libstdc++6
+            - fonts-droid
+          sources:
+            - ubuntu-toolchain-r-test
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-25.0.3
+          - android-25
+          - sys-img-armeabi-v7a-google_apis-25
+          - extra-android-m2repository
+          - extra-google-m2repository
+          - extra-google-android-support
+      before_install:
+        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
+        - "tar xvf secrets.tar"
+      before_script:
+        - "wget http://services.gradle.org/distributions/gradle-3.5-bin.zip"
+        - "unzip -qq gradle-3.5-bin.zip"
+        - "export GRADLE_HOME=$PWD/gradle-3.5"
+        - "export PATH=$GRADLE_HOME/bin:$PATH"
+        - "git clone https://github.com/flutter/flutter.git -b alpha --depth 1"
+      jdk: oraclejdk8
+      language: android
+      licenses:
+        - android-sdk-preview-license-.+
+        - android-sdk-license-.+
+        - google-gdk-license-.+
+      os: linux
+      script:
+        - "./flutter/bin/flutter -v build apk"
+      sudo: false
+    -
+      before_install:
+        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
+        - "tar xvf secrets.tar"
+      before_script:
+        - "pip install six"
+        - "brew update"
+        - "brew install --HEAD libimobiledevice"
+        - "brew install ideviceinstaller"
+        - "brew install ios-deploy"
+        - "git clone https://github.com/flutter/flutter.git -b alpha --depth 1"
+      language: generic
+      os: osx
+      osx_image: xcode8.3
+      script:
+        - "./flutter/bin/flutter -v build ios --no-codesign"
