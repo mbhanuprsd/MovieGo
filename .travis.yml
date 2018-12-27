@@ -33,7 +33,7 @@ matrix:
       before_install:
         - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "tar xvf secrets.tar"
-        - "chmod +x gradlew"
+        - "chmod +x ./gradlew"
       before_script:
         - ./scripts/before_build_apks.sh
         - "export ANDROID_HOME=$HOME/android-sdk"
