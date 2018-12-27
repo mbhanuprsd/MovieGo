@@ -1,6 +1,4 @@
 ### Flutter Generated
-tmdb.dart
-*GoogleService-Info.plist
 
 # Miscellaneous
 *.class
@@ -123,6 +121,7 @@ captures/
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
+*GoogleService-Info.plist
 
 # Freeline
 freeline.py
