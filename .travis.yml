@@ -1,56 +1,59 @@
---- 
-cache: 
-  directories: ~
-matrix: 
-  include: 
-    - # Job 1) Run analyzer
-      addons: 
-        apt: 
-          packages: 
-            - libstdc++6
-            - fonts-droid
-          sources: 
-            - ubuntu-toolchain-r-test
-      before_script: 
-        - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
-        - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
-        - "flutter doctor"
-      env: 
-        - SHARD=Analyze
-      os: linux
-      script: 
-        - "flutter analyze"
-      sudo: false
-    - # Job 2) Build the example binary for Android (APK)
-      addons: 
-        apt: 
-          packages: 
-            - lib32stdc++6
-            - libstdc++6
-            - fonts-droid
-          sources: 
-            - ubuntu-toolchain-r-test
-      before_script: 
-        - ./scripts/before_build_apks.sh
-        - "export ANDROID_HOME=$HOME/android-sdk"
-        - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
-      env: 
-        - "SHARD=\"Build example apks\""
-      jdk: oraclejdk8
-      os: linux
-      script: 
-        - "cd ./example"
-        - "flutter build apk"
-      sudo: false
-    - # Job 2) Build the example binary for iOS (IPA)
-      before_script: 
-        - ./scripts/before_build_ipas.sh
-        - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
-      env: 
-        - "SHARD=\"Build example ipas\""
-      language: generic
-      os: osx
-      osx_image: xcode9.3
-      script: 
-        - "cd ./example"
-        - "flutter build ios --no-codesign"
+cache:
+  directories: 
+matrix:
+  include:
+  - addons:
+      apt:
+        packages:
+        - libstdc++6
+        - fonts-droid
+        sources:
+        - ubuntu-toolchain-r-test
+    before_script:
+    - git clone https://github.com/flutter/flutter.git $HOME/flutter
+    - export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH
+    - flutter doctor
+    env:
+    - SHARD=Analyze
+    os: linux
+    script:
+    - flutter analyze
+    sudo: false
+  - addons:
+      apt:
+        packages:
+        - lib32stdc++6
+        - libstdc++6
+        - fonts-droid
+        sources:
+        - ubuntu-toolchain-r-test
+    before_script:
+    - "./scripts/before_build_apks.sh"
+    - export ANDROID_HOME=$HOME/android-sdk
+    - export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH
+    env:
+    - SHARD="Build example apks"
+    jdk: oraclejdk8
+    os: linux
+    script:
+    - cd ./example
+    - flutter build apk
+    sudo: false
+  - before_script:
+    - "./scripts/before_build_ipas.sh"
+    - export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH
+    env:
+    - SHARD="Build example ipas"
+    language: generic
+    os: osx
+    osx_image: xcode9.3
+    script:
+    - cd ./example
+    - flutter build ios --no-codesign
+before_install:
+- openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
+  -in GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -d
+- openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
+  -in tmdb.dart.enc -out lib/tmdb.dart -d
+- openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv
+  -in google-services.json.enc -out android/app/google-services.json -d
