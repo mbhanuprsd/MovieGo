@@ -27,7 +27,8 @@ matrix:
         skip_cleanup: true
         on:
           repo: mbhanuprsd/MovieGo
-          tags: true
+          tags: fasle
+          all_branches: true
       env:
         - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
