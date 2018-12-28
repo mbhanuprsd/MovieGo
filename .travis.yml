@@ -1,4 +1,7 @@
 ---
+branches:
+  only:
+    - master
 cache:
   directories: ~
 matrix:
@@ -34,9 +37,6 @@ matrix:
         on:
           repo: mbhanuprsd/MovieGo
           tags: fasle
-          branches:
-            only:
-              - master
       env:
         - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
