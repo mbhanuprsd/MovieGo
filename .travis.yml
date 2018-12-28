@@ -34,7 +34,9 @@ matrix:
         on:
           repo: mbhanuprsd/MovieGo
           tags: fasle
-          all_branches: true
+          branches:
+            only:
+              - master
       env:
         - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
@@ -49,22 +51,24 @@ matrix:
       before_script:
         - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
-      before_deploy:
-        # Set up git user name and tag this commit
-        - git config --local user.name "Bhanu Prasad M"
-        - git config --local user.email "mbhanuprsd@gmail.com"
-        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-        - git tag $TRAVIS_TAG
-      deploy:
-        api_key:
-          secure: cZjPkZ7B0/FNH8rSoVNMChyxoXWA0y1Ler5zNNwhqSf19shLh+JaPI/AEeJsq+zBpqcefcqcEujZ4m7KJblRHGwfgiB9VLVK9+ZMSc4jVTrXw5/s9hXkl2N+F0HRUM2wrnTXguem/VmYQpv/Z0Mf0poPXqt9MiNXPcZGWzcekc/Lun1HMk9MZIilsnExuODj5hnKiFqC+/V1bHzHwmi0P8ZGQ0cXIyhBHFP9LVnzuUKOhiZ2iTK8rhuOf7s7rIWpO/ZyCJq2Y6fCqzoszoDvhoE+BPL6fQCwpk24oUWM1K/HUS0EIg66BY88I8+Qcszr87GKzSEKUaHW5sUp1O2tGWk92HeX98LZ7Xj9P9opkKhKA5ovJYzbPwzum0DoHqVVNOhgahBJKFHlUZVzQjp4XLg3xRLLMLes3Y/r9m9UhClTW5UBZXQ/y7cEXs/zT0wJcztS/AVUOz5HtgWpumNDwN5hYFsLMYUyjWN8dJrTZFFiB0pL23eh8tB+Tjs3HHytOKnKiIxX0b/LQKDCba0v/HttgLkaGs+0ROvq3WEiLeMM+WpNEa5SormjxzG8mBvJ/sRDf5uRr2w86jCG6Y/ZiLijchwbrd/SE5EMW/hZJsWljWry0vNG0Q0081t+9ON/hmj9I2vDcbdRsHV6fw4DUZgk1TR9OgiomS2E8Ms5eKM=
-        file: /Users/travis/build/mbhanuprsd/MovieGo/build/ios/iphoneos/Runner.app
-        provider: releases
-        skip_cleanup: true
-        on:
-          repo: mbhanuprsd/MovieGo
-          tags: fasle
-          all_branches: true
+#      before_deploy:
+#        # Set up git user name and tag this commit
+#        - git config --local user.name "Bhanu Prasad M"
+#        - git config --local user.email "mbhanuprsd@gmail.com"
+#        - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+#        - git tag $TRAVIS_TAG
+#      deploy:
+#        api_key:
+#          secure: cZjPkZ7B0/FNH8rSoVNMChyxoXWA0y1Ler5zNNwhqSf19shLh+JaPI/AEeJsq+zBpqcefcqcEujZ4m7KJblRHGwfgiB9VLVK9+ZMSc4jVTrXw5/s9hXkl2N+F0HRUM2wrnTXguem/VmYQpv/Z0Mf0poPXqt9MiNXPcZGWzcekc/Lun1HMk9MZIilsnExuODj5hnKiFqC+/V1bHzHwmi0P8ZGQ0cXIyhBHFP9LVnzuUKOhiZ2iTK8rhuOf7s7rIWpO/ZyCJq2Y6fCqzoszoDvhoE+BPL6fQCwpk24oUWM1K/HUS0EIg66BY88I8+Qcszr87GKzSEKUaHW5sUp1O2tGWk92HeX98LZ7Xj9P9opkKhKA5ovJYzbPwzum0DoHqVVNOhgahBJKFHlUZVzQjp4XLg3xRLLMLes3Y/r9m9UhClTW5UBZXQ/y7cEXs/zT0wJcztS/AVUOz5HtgWpumNDwN5hYFsLMYUyjWN8dJrTZFFiB0pL23eh8tB+Tjs3HHytOKnKiIxX0b/LQKDCba0v/HttgLkaGs+0ROvq3WEiLeMM+WpNEa5SormjxzG8mBvJ/sRDf5uRr2w86jCG6Y/ZiLijchwbrd/SE5EMW/hZJsWljWry0vNG0Q0081t+9ON/hmj9I2vDcbdRsHV6fw4DUZgk1TR9OgiomS2E8Ms5eKM=
+#        file: /Users/travis/build/mbhanuprsd/MovieGo/build/ios/iphoneos/Runner.app
+#        provider: releases
+#        skip_cleanup: true
+#        on:
+#          repo: mbhanuprsd/MovieGo
+#          tags: fasle
+#          branches:
+#            only:
+#              - master
       env:
         - "SHARD=\"Build example ipas\""
       language: generic
