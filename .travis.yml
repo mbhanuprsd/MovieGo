@@ -19,6 +19,22 @@ matrix:
         - ./scripts/before_build_apks.sh
         - "export ANDROID_HOME=$HOME/android-sdk"
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+      before_deploy:
+        - git tag -f "travis-build"
+      deploy:
+        provider: releases
+        api_key: $GITHUB_API_KEY
+        file_glob: true
+        file: build/app/outputs/apk/release/app-release.apk
+        skip_cleanup: true
+        overwrite: true
+        prerelease: true
+        target_commitsh: $TRAVIS_COMMIT
+        on:
+          branch: master
+          repo: mbhanuprsd/MovieGo
+      after_deploy:
+        - rm -rf build/app/outputs
       env:
         - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
