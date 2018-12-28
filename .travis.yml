@@ -11,34 +11,38 @@ matrix:
             - fonts-droid
           sources:
             - ubuntu-toolchain-r-test
-      android:
-        components:
-          - tools
-          - platform-tools
-          - build-tools-26.0.3
-          - android-26
-          - sys-img-armeabi-v7a-google_apis-26
-          - extra-android-m2repository
-          - extra-google-m2repository
-          - extra-google-android-support
+      before_script:
+        - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
+        - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+        - "flutter doctor"
+      env:
+        - SHARD=Analyze
+      os: linux
+      script:
+        - "flutter analyze"
+      sudo: false
+    -
+      addons:
+        apt:
+          packages:
+            - lib32stdc++6
+            - libstdc++6
+            - fonts-droid
+          sources:
+            - ubuntu-toolchain-r-test
       before_install:
         - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "tar xvf secrets.tar"
       before_script:
-        - "wget http://services.gradle.org/distributions/gradle-3.5-bin.zip"
-        - "unzip -qq gradle-3.5-bin.zip"
-        - "export GRADLE_HOME=$PWD/gradle-3.5"
-        - "export PATH=$GRADLE_HOME/bin:$PATH"
-        - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
+        - ./scripts/before_build_apks.sh
+        - "export ANDROID_HOME=$HOME/android-sdk"
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+      env:
+        - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
-      language: android
-      licenses:
-        - android-sdk-preview-license-.+
-        - android-sdk-license-.+
-        - google-gdk-license-.+
       os: linux
       script:
+        - "cd ./example"
         - "flutter build apk"
       sudo: false
     -
@@ -46,16 +50,13 @@ matrix:
         - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "tar xvf secrets.tar"
       before_script:
-        - "brew update"
-        - "brew install --HEAD libimobiledevice"
-        - "brew install ideviceinstaller"
-        - "brew install ios-deploy"
-        - "brew reinstall python@2"
-        - "pip install six"
-        - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
+        - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+      env:
+        - "SHARD=\"Build example ipas\""
       language: generic
       os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.3
       script:
+        - "cd ./example"
         - "flutter build ios --no-codesign"
