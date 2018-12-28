@@ -24,8 +24,10 @@ matrix:
           secure: cZjPkZ7B0/FNH8rSoVNMChyxoXWA0y1Ler5zNNwhqSf19shLh+JaPI/AEeJsq+zBpqcefcqcEujZ4m7KJblRHGwfgiB9VLVK9+ZMSc4jVTrXw5/s9hXkl2N+F0HRUM2wrnTXguem/VmYQpv/Z0Mf0poPXqt9MiNXPcZGWzcekc/Lun1HMk9MZIilsnExuODj5hnKiFqC+/V1bHzHwmi0P8ZGQ0cXIyhBHFP9LVnzuUKOhiZ2iTK8rhuOf7s7rIWpO/ZyCJq2Y6fCqzoszoDvhoE+BPL6fQCwpk24oUWM1K/HUS0EIg66BY88I8+Qcszr87GKzSEKUaHW5sUp1O2tGWk92HeX98LZ7Xj9P9opkKhKA5ovJYzbPwzum0DoHqVVNOhgahBJKFHlUZVzQjp4XLg3xRLLMLes3Y/r9m9UhClTW5UBZXQ/y7cEXs/zT0wJcztS/AVUOz5HtgWpumNDwN5hYFsLMYUyjWN8dJrTZFFiB0pL23eh8tB+Tjs3HHytOKnKiIxX0b/LQKDCba0v/HttgLkaGs+0ROvq3WEiLeMM+WpNEa5SormjxzG8mBvJ/sRDf5uRr2w86jCG6Y/ZiLijchwbrd/SE5EMW/hZJsWljWry0vNG0Q0081t+9ON/hmj9I2vDcbdRsHV6fw4DUZgk1TR9OgiomS2E8Ms5eKM=
         file: build/app/outputs/apk/release/app-release.apk
         provider: releases
-        true:
+        skip_cleanup: true
+        on:
           repo: mbhanuprsd/MovieGo
+          tags: true
       env:
         - "SHARD=\"Build example apks\""
       jdk: oraclejdk8
