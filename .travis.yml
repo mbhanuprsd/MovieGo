@@ -7,27 +7,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libstdc++6
-            - fonts-droid
-          sources:
-            - ubuntu-toolchain-r-test
-      before_install:
-        - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
-        - "tar xvf secrets.tar"
-      before_script:
-        - "git clone https://github.com/flutter/flutter.git $HOME/flutter"
-        - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
-        - "flutter doctor"
-      env:
-        - SHARD=Analyze
-      os: linux
-      script:
-        - "flutter analyze"
-      sudo: false
-    -
-      addons:
-        apt:
-          packages:
             - lib32stdc++6
             - libstdc++6
             - fonts-droid
