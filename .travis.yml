@@ -46,7 +46,9 @@ matrix:
       before_install:
         - "openssl aes-256-cbc -K $encrypted_684cec268945_key -iv $encrypted_684cec268945_iv -in secrets.tar.enc -out secrets.tar -d"
         - "tar xvf secrets.tar"
-      install: travis_wait mvn install
+      install:
+        - "mvn install"
+        - "travis_wait mvn install"
       before_script:
         - ./scripts/before_build_ipas.sh
         - "export PATH=$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
