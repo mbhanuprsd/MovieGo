@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
+import 'dart:core';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 

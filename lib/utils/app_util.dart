@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:core';
 import 'package:flutter/material.dart';
 
 class AppUtils {
