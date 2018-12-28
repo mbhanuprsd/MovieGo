@@ -156,6 +156,11 @@ class CastDetail {
     backdropPath = json['backdrop_path'];
     overview = json['overview'];
     posterPath = json['poster_path'];
+    try {
+      DateTime.parse(releaseDate);
+    } catch (e) {
+      releaseDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -236,6 +241,11 @@ class CrewDetail {
     adult = json['adult'];
     posterPath = json['poster_path'];
     creditId = json['credit_id'];
+    try {
+      DateTime.parse(releaseDate);
+    } catch (e) {
+      releaseDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {
