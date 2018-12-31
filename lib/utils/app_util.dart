@@ -36,7 +36,7 @@ class AppUtils {
         });
   }
 
-  static showContionalAlert(
+  static showConditionalAlert(
       BuildContext context,
       String title,
       String message,

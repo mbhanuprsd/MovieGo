@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:movie_go/pages/home_page.dart';
+import 'package:movie_go/pages/info_page.dart';
 import 'package:movie_go/pages/login_page.dart';
 import 'package:movie_go/pages/movie_info_page.dart';
 import 'package:movie_go/pages/movie_search_page.dart';
 import 'package:movie_go/pages/people_info_page.dart';
+import 'package:movie_go/pages/people_search_page.dart';
 import 'package:movie_go/pages/signup_page.dart';
 
 class MyNavigator {
@@ -26,9 +28,14 @@ class MyNavigator {
         (Route<dynamic> route) => false);
   }
 
-  static void goToSearch(BuildContext context) {
+  static void goToMovieSearch(BuildContext context) {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => MovieSearchPage()));
+  }
+
+  static void goToPeopleSearch(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => PeopleSearchPage()));
   }
 
   static void goToMovieInfo(BuildContext context, int movieId) {
@@ -39,5 +46,10 @@ class MyNavigator {
   static void goToPersonInfo(BuildContext context, int personId) {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => PeopleInfoPage(personId)));
+  }
+
+  static void goToDeveloperInfo(BuildContext context, String userName) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => InfoPage(userName)));
   }
 }

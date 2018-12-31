@@ -4,6 +4,7 @@ import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/movie_search_model.dart';
 import 'package:movie_go/models/people_info.dart';
+import 'package:movie_go/models/people_search_model.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
 
@@ -13,77 +14,79 @@ class MovieListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return PosterListItem(
+        movieInfo.posterPath,
+        movieInfo.title,
+        "Rating : ${movieInfo.voteAverage}/10 (${movieInfo.voteCount})",
+        "Released on : " + movieInfo.releaseDate,
+        movieInfo.overview,
+        () => MyNavigator.goToMovieInfo(context, movieInfo.id));
+  }
+}
+
+class PeopleListItem extends StatelessWidget {
+  final PeopleInfo peopleInfo;
+  PeopleListItem(this.peopleInfo);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterListItem(
+        peopleInfo.profilePath,
+        peopleInfo.name,
+        null,
+        null,
+        peopleInfo.knownFor?.map((k) => k.title)?.toSet()?.toList()?.join(', '),
+        () => MyNavigator.goToPersonInfo(context, peopleInfo.id));
+  }
+}
+
+class PosterListItem extends StatelessWidget {
+  final String imagePath;
+  final String title;
+  final String subtitle1;
+  final String subtitle2;
+  final String description;
+  final Function callback;
+
+  PosterListItem(this.imagePath, this.title, this.subtitle1, this.subtitle2,
+      this.description, this.callback);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 8.0,
       margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
       child: Container(
         decoration: BoxDecoration(color: Colors.grey),
         child: ListTile(
-          onTap: () => MyNavigator.goToMovieInfo(context, movieInfo.id),
+          onTap: callback,
           contentPadding:
               EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          leading: (movieInfo.posterPath == null)
+          leading: (imagePath == null)
               ? Icon(
                   Icons.movie_filter,
                   size: 80.0,
                 )
               : CachedNetworkImage(
-                  imageUrl: ImageUtils.getFullImagePath(movieInfo.posterPath),
+                  imageUrl: ImageUtils.getFullImagePath(imagePath),
                   placeholder: new CircularProgressIndicator(),
                   errorWidget: new Icon(Icons.error),
                   height: 80.0,
                 ),
-          title: new Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text(
-                movieInfo.title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                ),
-                maxLines: 1,
-              ),
-              Text(
-                "Rating : " +
-                    movieInfo.voteAverage.toString() +
-                    "/10 (" +
-                    movieInfo.voteCount.toString() +
-                    ")",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 12.0,
-                ),
-                maxLines: 1,
-              ),
-            ],
-          ),
+          title: CustomText(title, 18.0, true, Colors.white, 1),
           subtitle: new Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              movieInfo.overview == null
-                  ? new Container()
-                  : Text(
-                      movieInfo.overview,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              subtitle1 == null
+                  ? Container()
+                  : CustomText(subtitle1, 12.0, false, Colors.white, 1),
+              subtitle2 == null
+                  ? Container()
+                  : CustomText(subtitle2, 12.0, false, Colors.white, 1),
               Padding(padding: EdgeInsets.only(top: 5.0)),
-              Text(
-                "Released on : " + movieInfo.releaseDate,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              description == null
+                  ? new Container()
+                  : CustomText(description, 14.0, false, Colors.white, 2),
             ],
           ),
         ),

@@ -22,6 +22,7 @@ dependencies:
   cached_network_image:
   firebase_auth:
   cloud_firestore:
+  url_launcher:
 
 dev_dependencies:
   flutter_test:

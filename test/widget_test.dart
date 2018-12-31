@@ -6,9 +6,10 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:movie_go/tmdb.dart';
 
 void main() {
   test('Encrypting file', () {
-    print('Test');
+    print(TMDB.key);
   });
 }

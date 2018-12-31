@@ -38,8 +38,9 @@ class HomePageState extends State<HomePage> {
   }
 
   final drawerItems = [
-    new DrawerItem("Search", Icons.search),
-    new DrawerItem("Settings", Icons.settings),
+    new DrawerItem("Search Movies", Icons.movie_filter),
+    new DrawerItem("Search People", Icons.account_circle),
+    new DrawerItem("Developer", Icons.info),
     new DrawerItem("Logout", Icons.exit_to_app)
   ];
 
@@ -47,20 +48,27 @@ class HomePageState extends State<HomePage> {
     print(index);
     switch (index) {
       case 0:
-        MyNavigator.goToSearch(context);
+        MyNavigator.goToMovieSearch(context);
         break;
       case 1:
-        AppUtils.showAlert(context, "Settings", null, "Ok", () {});
+        MyNavigator.goToPeopleSearch(context);
         break;
       case 2:
-        _auth.signOut().then((_) {
-          AppUtils.showContionalAlert(
-              context, "Do you want to logout?", null, "Yes", () {
-            MyNavigator.goToLogin(context);
-          }, "No", () => Navigator.of(context).pop());
-        });
+        MyNavigator.goToDeveloperInfo(context, curentUser?.displayName);
+        break;
+      case 3:
+        logout();
         break;
     }
+  }
+
+  void logout() {
+    _auth.signOut().then((_) {
+      AppUtils.showConditionalAlert(
+          context, "Do you want to logout?", null, "Yes", () {
+        MyNavigator.goToLogin(context);
+      }, "No", () => Navigator.of(context).pop());
+    });
   }
 
   @override
@@ -103,8 +111,8 @@ class HomePageState extends State<HomePage> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: fetchBookmarks,
+            icon: Icon(Icons.exit_to_app),
+            onPressed: logout,
           ),
         ],
       ),
