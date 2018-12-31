@@ -147,12 +147,12 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                                       Colors.white,
                                       null),
                                   Padding(
-                                    padding: EdgeInsets.only(top: 20.0),
+                                    padding: EdgeInsets.only(top: 10.0),
                                   ),
                                   _personDetail.deathday == null
                                       ? Container()
                                       : CustomText(
-                                          "Death: ${_personDetail.birthday}",
+                                          "Death: ${_personDetail.deathday}",
                                           16.0,
                                           false,
                                           Colors.white,
