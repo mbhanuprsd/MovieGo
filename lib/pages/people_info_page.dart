@@ -41,7 +41,14 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("${_personDetail?.name} : $peopleId");
+    if (_movieCredits != null && _movieCredits.cast != null) {
+      _movieCredits.cast.sort((a, b) => DateTime.tryParse(b.releaseDate)
+          .compareTo(DateTime.tryParse(a.releaseDate)));
+    }
+    if (_movieCredits != null && _movieCredits.crew != null) {
+      _movieCredits.crew.sort((a, b) => DateTime.tryParse(b.releaseDate)
+          .compareTo(DateTime.tryParse(a.releaseDate)));
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(_personDetail?.name ?? "Loading..."),
