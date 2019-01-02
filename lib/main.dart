@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
         accentColor: accentColor,
         scaffoldBackgroundColor: accentColor,
         hintColor: primaryColor,
+        canvasColor: accentColor,
         buttonTheme: ButtonThemeData(
           buttonColor: primaryColor,
           highlightColor: accentColor,

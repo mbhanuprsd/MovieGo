@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/movie_search_model.dart';
 import 'package:movie_go/tmdb.dart';
@@ -18,6 +19,7 @@ class MovieSearchPageState extends State<MovieSearchPage> {
   int pageNumber = 1;
   List<MovieInfo> movieList;
   ScrollController controller;
+  String selectedSort;
 
   @override
   void initState() {
@@ -59,42 +61,88 @@ class MovieSearchPageState extends State<MovieSearchPage> {
                 ),
         ],
       ),
-      body: new Container(
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            searching
-                ? Center(
-                    child: new CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).primaryColor),
+      body: searching
+          ? Center(
+              child: new CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).primaryColor),
+              ),
+            )
+          : (movieList == null || movieList.length == 0)
+              ? Center(
+                  child: new Text(
+                    'No Movies Found',
+                    style: new TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  )
-                : (movieList == null || movieList.length == 0)
-                    ? Center(
-                        child: new Text(
-                          'No Movies Found',
-                          style: new TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : new Expanded(
-                        child: new Scrollbar(
-                          child: new ListView.builder(
-                              controller: controller,
-                              itemCount: movieList.length,
-                              itemBuilder: (BuildContext ctxt, int index) {
-                                return new MovieListItem(movieList[index]);
-                              }),
-                        ),
-                      ),
-          ],
-        ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Column(
+                  children: <Widget>[
+                    buildDropdownButton(),
+                    buildPeopleList(),
+                  ],
+                ),
+    );
+  }
+
+  Widget buildDropdownButton() {
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Row(
+        children: <Widget>[
+          new CustomText('Sort by', 18.0, true, Colors.white, 1),
+          Padding(
+            padding: EdgeInsets.only(left: 10.0),
+          ),
+          new DropdownButton<String>(
+            value: selectedSort,
+            hint: new CustomText('Select', 18.0, true, Colors.white, 1),
+            items: <String>['Popularity', 'Name', 'Release Date']
+                .map((String value) {
+              return new DropdownMenuItem<String>(
+                value: value,
+                child: CustomText(value, 18.0, true, Colors.white, 1),
+              );
+            }).toList(),
+            onChanged: (value) {
+              selectedSort = value;
+              sortMovies(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void sortMovies(String value) {
+    switch (value) {
+      case 'Popularity':
+        movieList.sort((a, b) => b.popularity.compareTo(a.popularity));
+        break;
+      case 'Name':
+        movieList.sort((a, b) => a.title.compareTo(b.title));
+        break;
+      case 'Release Date':
+        movieList.sort((a, b) => DateTime.tryParse(b.releaseDate)
+            .compareTo(DateTime.tryParse(a.releaseDate)));
+        break;
+    }
+    setState(() {});
+  }
+
+  Widget buildPeopleList() {
+    return Expanded(
+      child: Scrollbar(
+        child: new ListView.builder(
+            controller: controller,
+            itemCount: movieList.length,
+            itemBuilder: (BuildContext ctxt, int index) {
+              return new MovieListItem(movieList[index]);
+            }),
       ),
     );
   }
@@ -136,6 +184,9 @@ class MovieSearchPageState extends State<MovieSearchPage> {
           movieList.addAll(data.results);
         }
         movieList = movieList.toSet().toList();
+        if (selectedSort != null) {
+          sortMovies(selectedSort);
+        }
         searching = false;
         setState(() {});
       }).catchError((e) {

@@ -45,6 +45,12 @@ class PersonDetail {
     adult = json['adult'];
     imdbId = json['imdb_id'];
     homepage = json['homepage'];
+
+    try {
+      DateTime.parse(birthday);
+    } catch (e) {
+      birthday = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {

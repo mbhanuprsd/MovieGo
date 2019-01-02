@@ -78,6 +78,11 @@ class MovieInfo {
     adult = json['adult'];
     overview = json['overview'];
     releaseDate = json['release_date'];
+    try {
+      DateTime.parse(releaseDate);
+    } catch (e) {
+      releaseDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {

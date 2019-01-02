@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:movie_go/constants.dart';
+import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/people_search_model.dart';
 import 'package:movie_go/tmdb.dart';
@@ -18,6 +20,7 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
   int pageNumber = 1;
   List<PeopleInfo> peopleList;
   ScrollController controller;
+  String selectedSort;
 
   @override
   void initState() {
@@ -59,42 +62,83 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
                 ),
         ],
       ),
-      body: new Container(
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            searching
-                ? Center(
-                    child: new CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).primaryColor),
+      body: searching
+          ? Center(
+              child: new CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).primaryColor),
+              ),
+            )
+          : (peopleList == null || peopleList.length == 0)
+              ? Center(
+                  child: new Text(
+                    'No People Found',
+                    style: new TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  )
-                : (peopleList == null || peopleList.length == 0)
-                    ? Center(
-                        child: new Text(
-                          'No People Found',
-                          style: new TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : new Expanded(
-                        child: new Scrollbar(
-                          child: new ListView.builder(
-                              controller: controller,
-                              itemCount: peopleList.length,
-                              itemBuilder: (BuildContext ctxt, int index) {
-                                return new PeopleListItem(peopleList[index]);
-                              }),
-                        ),
-                      ),
-          ],
-        ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Column(
+                  children: <Widget>[
+                    buildDropdownButton(),
+                    buildPeopleList(),
+                  ],
+                ),
+    );
+  }
+
+  Widget buildDropdownButton() {
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Row(
+        children: <Widget>[
+          new CustomText('Sort by', 18.0, true, Colors.white, 1),
+          Padding(
+            padding: EdgeInsets.only(left: 10.0),
+          ),
+          new DropdownButton<String>(
+            value: selectedSort,
+            hint: new CustomText('Select', 18.0, true, Colors.white, 1),
+            items: <String>['Popularity', 'Name'].map((String value) {
+              return new DropdownMenuItem<String>(
+                value: value,
+                child: CustomText(value, 18.0, true, Colors.white, 1),
+              );
+            }).toList(),
+            onChanged: (value) {
+              selectedSort = value;
+              sortPeople(value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void sortPeople(String value) {
+    switch (value) {
+      case 'Popularity':
+        peopleList.sort((a, b) => b.popularity.compareTo(a.popularity));
+        break;
+      case 'Name':
+        peopleList.sort((a, b) => a.name.compareTo(b.name));
+        break;
+    }
+    setState(() {});
+  }
+
+  Widget buildPeopleList() {
+    return Expanded(
+      child: Scrollbar(
+        child: new ListView.builder(
+            controller: controller,
+            itemCount: peopleList.length,
+            itemBuilder: (BuildContext ctxt, int index) {
+              return new PeopleListItem(peopleList[index]);
+            }),
       ),
     );
   }
@@ -136,6 +180,9 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
           peopleList.addAll(data.results);
         }
         peopleList = peopleList.toSet().toList();
+        if (selectedSort != null) {
+          sortPeople(selectedSort);
+        }
         searching = false;
         setState(() {});
       }).catchError((e) {

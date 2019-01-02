@@ -226,6 +226,8 @@ class HomePageState extends State<HomePage> {
   bool bookmarksAvailable = false;
   fetchBookmarks() {
     Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) {
+      favMovieList = new List();
+      favPersonList = new List();
       fetchMovieBookmarks(qs);
       fetchPeopleBookmarks(qs);
     });
