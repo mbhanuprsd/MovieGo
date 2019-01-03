@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
@@ -40,29 +41,55 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: 'Full Name'),
+                  decoration: new InputDecoration(
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                  ),
                   validator: (value) =>
                       value.isEmpty ? 'Please enter full name' : null,
                   onSaved: (value) => _fullName = value,
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                ),
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: 'Email'),
+                  decoration: new InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                  ),
                   validator: (value) =>
                       value.isEmpty ? 'Please enter email' : null,
                   onSaved: (value) => _email = value,
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
                 ),
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: 'Password'),
+                  decoration: new InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                  ),
                   obscureText: true,
                   validator: (value) =>
                       value.isEmpty ? 'Please enter password' : null,
                   onSaved: (value) => _password = value,
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                ),
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: 'Retype Password'),
+                  decoration: new InputDecoration(
+                    labelText: 'Retype Password',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0)),
+                  ),
                   obscureText: true,
                   validator: (value) => (value.isEmpty && _password != value)
                       ? 'Please retype password'
@@ -80,7 +107,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   onPressed: () => validateAndSave().then((user) {
                         AppUtils.showAlert(context, "Registered Succesfully!",
                             null, "Ok", () => MyNavigator.goToHome(context));
-                      }).catchError((e) => print(e)),
+                      }).catchError((e) => AppUtils.showSimpleAlert(
+                          context, (e as PlatformException).details)),
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 20.0),
@@ -91,7 +119,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     'Login',
                     style: TextStyle(fontSize: 20.0),
                   ),
-                  onPressed: () => MyNavigator.goToLogin(context),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),

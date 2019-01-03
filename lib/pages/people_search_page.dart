@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:movie_go/constants.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/people_search_model.dart';
