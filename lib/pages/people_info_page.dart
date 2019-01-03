@@ -277,10 +277,9 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
         Map mapJson = json.decode(detailsJson);
         _personDetail = PersonDetail.fromJson(mapJson);
         aliases = _personDetail.alsoKnownAs?.join('\n');
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
-        setState(() {});
       });
     });
   }
@@ -295,11 +294,9 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
         Map mapJson = json.decode(detailsJson);
         ImageResponse imageResponse = ImageResponse.fromJson(mapJson);
         images = imageResponse?.profiles?.map((i) => i.filePath)?.toList();
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
-        images = new List();
-        setState(() {});
       });
     });
   }
@@ -314,10 +311,9 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
       response.transform(utf8.decoder).join().then((detailsJson) {
         Map mapJson = json.decode(detailsJson);
         _movieCredits = MovieCredits.fromJson(mapJson);
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
-        setState(() {});
       });
     });
   }

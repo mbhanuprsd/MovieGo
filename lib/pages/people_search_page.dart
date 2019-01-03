@@ -127,7 +127,7 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
         peopleList.sort((a, b) => a.name.compareTo(b.name));
         break;
     }
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Widget buildPeopleList() {
@@ -149,7 +149,7 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
     FocusScope.of(context).requestFocus(new FocusNode());
     if (searchString != null && searchString.length > 1 && !searching) {
       searching = true;
-      setState(() {});
+      if (mounted) setState(() {});
       AppUtils.isNetworkConnected().then((connected) {
         if (connected) {
           getPeopleList();
@@ -157,7 +157,7 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
           AppUtils.showAlert(
               context, 'No intenet connection', null, 'Ok', null);
           searching = false;
-          setState(() {});
+          if (mounted) setState(() {});
         }
       });
     }
@@ -184,11 +184,10 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
           sortPeople(selectedSort);
         }
         searching = false;
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
         searching = false;
-        setState(() {});
       });
     });
   }

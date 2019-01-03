@@ -226,10 +226,9 @@ class MovieInfoPageState extends State<MovieInfoPage> {
         _movieDetails = MovieDetails.fromJson(mapJson);
         generes = _movieDetails.genres?.map((g) => g.name)?.toList()?.join(','
             ' ');
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
-        setState(() {});
       });
     });
   }
@@ -243,7 +242,7 @@ class MovieInfoPageState extends State<MovieInfoPage> {
       response.transform(utf8.decoder).join().then((creditsJson) {
         Map creditsmap = json.decode(creditsJson);
         castCrewDetails = CastCrewDetails.fromJson(creditsmap);
-        setState(() {});
+        if (mounted) setState(() {});
       });
     });
   }

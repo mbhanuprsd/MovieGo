@@ -18,10 +18,10 @@ FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => HomePageState();
+  State<StatefulWidget> createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   FirebaseUser curentUser;
   List<MovieDetails> favMovieList;
@@ -147,79 +147,91 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: new AssetImage("assets/images/poster.jpg"),
-                fit: BoxFit.fitHeight,
-              ),
+      body: buildHomeWidget(context),
+    );
+  }
+
+  Widget buildHomeWidget(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: new AssetImage("assets/images/poster.jpg"),
+              fit: BoxFit.fitHeight,
             ),
           ),
-          Container(
-            decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
-          ),
-          SingleChildScrollView(
-            child: new Container(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Center(
-                    child: CenterText(
-                        "Welcome ${curentUser == null ? "" : curentUser.displayName}!",
-                        16.0,
-                        true,
-                        Colors.white,
-                        2),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 30.0),
-                  ),
-                  CustomText("Favorite Movies:", 20.0, true, Colors.white, 1),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                  ),
-                  Container(
-                    height: 200.0,
-                    child: (favMovieList == null || favMovieList?.length == 0)
-                        ? Center(
-                            child: CenterText("No Favourites", 20.0, true,
-                                Theme.of(context).primaryColor, 1))
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: favMovieList.length,
-                            itemBuilder: (ctxt, index) {
-                              return new FavMovieItem(favMovieList[index]);
-                            }),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 30.0),
-                  ),
-                  CustomText("Favorite People:", 20.0, true, Colors.white, 1),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                  ),
-                  Container(
-                    height: 200.0,
-                    child: (favPersonList == null || favPersonList?.length == 0)
-                        ? Center(
-                            child: CenterText("No Favourites", 20.0, true,
-                                Theme.of(context).primaryColor, 1))
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: favPersonList.length,
-                            itemBuilder: (ctxt, index) {
-                              return new FavPersonItem(favPersonList[index]);
-                            }),
-                  ),
-                ],
-              ),
+        ),
+        Container(
+          decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
+        ),
+        SingleChildScrollView(
+          child: new Container(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Center(
+                  child: CenterText(
+                      "Welcome ${curentUser == null ? "" : curentUser.displayName}!",
+                      16.0,
+                      true,
+                      Colors.white,
+                      2),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 30.0),
+                ),
+                CustomText("Favorite Movies:", 20.0, true, Colors.white, 1),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                ),
+                buildFavMovieList(context),
+                Padding(
+                  padding: EdgeInsets.only(top: 30.0),
+                ),
+                CustomText("Favorite People:", 20.0, true, Colors.white, 1),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                ),
+                buildFavPeopleList(context),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildFavPeopleList(BuildContext context) {
+    return Container(
+      height: 200.0,
+      child: (favPersonList == null || favPersonList?.length == 0)
+          ? Center(
+              child: CenterText("No Favourites", 20.0, true,
+                  Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: favPersonList.length,
+              itemBuilder: (ctxt, index) {
+                return new FavPersonItem(favPersonList[index]);
+              }),
+    );
+  }
+
+  Widget buildFavMovieList(BuildContext context) {
+    return Container(
+      height: 200.0,
+      child: (favMovieList == null || favMovieList?.length == 0)
+          ? Center(
+              child: CenterText("No Favourites", 20.0, true,
+                  Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: favMovieList.length,
+              itemBuilder: (ctxt, index) {
+                return new FavMovieItem(favMovieList[index]);
+              }),
     );
   }
 

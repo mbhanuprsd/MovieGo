@@ -131,7 +131,7 @@ class MovieSearchPageState extends State<MovieSearchPage> {
             .compareTo(DateTime.tryParse(a.releaseDate)));
         break;
     }
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Widget buildPeopleList() {
@@ -153,7 +153,7 @@ class MovieSearchPageState extends State<MovieSearchPage> {
     FocusScope.of(context).requestFocus(new FocusNode());
     if (searchString != null && searchString.length > 1 && !searching) {
       searching = true;
-      setState(() {});
+      if (mounted) setState(() {});
       AppUtils.isNetworkConnected().then((connected) {
         if (connected) {
           getMovies();
@@ -161,7 +161,7 @@ class MovieSearchPageState extends State<MovieSearchPage> {
           AppUtils.showAlert(
               context, 'No intenet connection', null, 'Ok', null);
           searching = false;
-          setState(() {});
+          if (mounted) setState(() {});
         }
       });
     }
@@ -188,11 +188,10 @@ class MovieSearchPageState extends State<MovieSearchPage> {
           sortMovies(selectedSort);
         }
         searching = false;
-        setState(() {});
+        if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
         searching = false;
-        setState(() {});
       });
     });
   }
