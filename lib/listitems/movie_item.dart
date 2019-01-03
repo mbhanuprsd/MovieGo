@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
+import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/movie_search_model.dart';
 import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/models/people_search_model.dart';
+import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
 
@@ -105,7 +107,12 @@ class FavMovieItem extends StatelessWidget {
         movieDetails.posterPath,
         movieDetails.title,
         movieDetails.releaseDate,
-        () => MyNavigator.goToMovieInfo(context, movieDetails.id));
+        () => MyNavigator.goToMovieInfo(context, movieDetails.id),
+        () => AppUtils.showConditionalAlert(
+                context, 'Remove Bookmark?', null, "Yes", () {
+              FireStoreManager.toggleMovieBookMark(movieDetails.id);
+              Navigator.of(context).pop();
+            }, "No", () => Navigator.of(context).pop()));
   }
 }
 
@@ -119,7 +126,12 @@ class FavPersonItem extends StatelessWidget {
         personDetail.profilePath,
         personDetail.name,
         personDetail.knownForDepartment,
-        () => MyNavigator.goToPersonInfo(context, personDetail.id));
+        () => MyNavigator.goToPersonInfo(context, personDetail.id),
+        () => AppUtils.showConditionalAlert(
+                context, 'Remove Bookmark?', null, "Yes", () {
+              FireStoreManager.togglePersonBookMark(personDetail.id);
+              Navigator.of(context).pop();
+            }, "No", () => Navigator.of(context).pop()));
   }
 }
 
@@ -133,7 +145,8 @@ class PersonCastItem extends StatelessWidget {
         castDetail.posterPath,
         castDetail.title,
         castDetail.character,
-        () => MyNavigator.goToMovieInfo(context, castDetail.id));
+        () => MyNavigator.goToMovieInfo(context, castDetail.id),
+        null);
   }
 }
 
@@ -147,7 +160,8 @@ class PersonCrewItem extends StatelessWidget {
         _crewDetail.posterPath,
         _crewDetail.title,
         _crewDetail.department,
-        () => MyNavigator.goToMovieInfo(context, _crewDetail.id));
+        () => MyNavigator.goToMovieInfo(context, _crewDetail.id),
+        null);
   }
 }
 
@@ -156,7 +170,9 @@ class PosterViewItem extends StatelessWidget {
   final String title;
   final String subTitle;
   final Function callback;
-  PosterViewItem(this.imagePath, this.title, this.subTitle, this.callback);
+  final Function longPressCallBack;
+  PosterViewItem(this.imagePath, this.title, this.subTitle, this.callback,
+      this.longPressCallBack);
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +183,7 @@ class PosterViewItem extends StatelessWidget {
         decoration: BoxDecoration(color: Theme.of(context).accentColor),
         child: new GestureDetector(
           onTap: callback,
+          onLongPress: longPressCallBack,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[

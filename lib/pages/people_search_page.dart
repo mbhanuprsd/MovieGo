@@ -145,6 +145,7 @@ class PeopleSearchPageState extends State<PeopleSearchPage> {
   bool searching = false;
   searchPeople() {
     peopleList = new List();
+    pageNumber = 1;
     FocusScope.of(context).requestFocus(new FocusNode());
     if (searchString != null && searchString.length > 1 && !searching) {
       searching = true;

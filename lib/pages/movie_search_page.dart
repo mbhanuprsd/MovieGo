@@ -149,6 +149,7 @@ class MovieSearchPageState extends State<MovieSearchPage> {
 
   bool searching = false;
   searchMovies() {
+    pageNumber = 1;
     movieList = new List();
     FocusScope.of(context).requestFocus(new FocusNode());
     if (searchString != null && searchString.length > 1 && !searching) {

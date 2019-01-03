@@ -16,7 +16,8 @@ class CastItem extends StatelessWidget {
         castInfo.profilePath,
         castInfo.name,
         castInfo.character,
-        () => MyNavigator.goToPersonInfo(context, castInfo.id));
+        () => MyNavigator.goToPersonInfo(context, castInfo.id),
+        null);
   }
 }
 
@@ -27,6 +28,6 @@ class CrewItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PosterViewItem(crewInfo.profilePath, crewInfo.name, crewInfo.job,
-        () => MyNavigator.goToPersonInfo(context, crewInfo.id));
+        () => MyNavigator.goToPersonInfo(context, crewInfo.id), null);
   }
 }
