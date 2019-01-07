@@ -6,6 +6,7 @@ import 'package:movie_go/pages/movie_info_page.dart';
 import 'package:movie_go/pages/movie_search_page.dart';
 import 'package:movie_go/pages/people_info_page.dart';
 import 'package:movie_go/pages/people_search_page.dart';
+import 'package:movie_go/pages/season_info_page.dart';
 import 'package:movie_go/pages/signup_page.dart';
 import 'package:movie_go/pages/tv_info_page.dart';
 import 'package:movie_go/pages/tv_search_page.dart';
@@ -51,5 +52,9 @@ class MyNavigator {
 
   static void goToTVSearch(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => TVSearchPage()));
+  }
+
+  static void goToSeasonInfo(BuildContext context, int tvId, int seasonId) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SeasonInfoPage(tvId, seasonId)));
   }
 }

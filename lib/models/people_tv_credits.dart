@@ -87,6 +87,12 @@ class TvCast {
     backdropPath = json['backdrop_path'];
     overview = json['overview'];
     originCountry = json['origin_country'].cast<String>();
+
+    try {
+      DateTime.parse(firstAirDate);
+    } catch (e) {
+      firstAirDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -167,6 +173,11 @@ class TvCrew {
     voteAverage = json['vote_average'].toDouble();
     posterPath = json['poster_path'];
     creditId = json['credit_id'];
+    try {
+      DateTime.parse(firstAirDate);
+    } catch (e) {
+      firstAirDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {

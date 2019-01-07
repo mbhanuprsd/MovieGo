@@ -49,6 +49,12 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
     if (_movieCredits != null && _movieCredits.crew != null) {
       _movieCredits.crew.sort((a, b) => DateTime.tryParse(b.releaseDate).compareTo(DateTime.tryParse(a.releaseDate)));
     }
+    if (_tvCredits != null && _tvCredits.cast != null) {
+      _tvCredits.cast.sort((a, b) => DateTime.tryParse(b.firstAirDate).compareTo(DateTime.tryParse(a.firstAirDate)));
+    }
+    if (_tvCredits != null && _tvCredits.crew != null) {
+      _tvCredits.crew.sort((a, b) => DateTime.tryParse(b.firstAirDate).compareTo(DateTime.tryParse(a.firstAirDate)));
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(_personDetail?.name ?? "Loading..."),

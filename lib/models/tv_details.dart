@@ -394,6 +394,11 @@ class Seasons {
     overview = json['overview'];
     posterPath = json['poster_path'];
     seasonNumber = json['season_number'];
+    try {
+      DateTime.parse(airDate);
+    } catch (e) {
+      airDate = "0000-00-00";
+    }
   }
 
   Map<String, dynamic> toJson() {

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/cast_crew_item.dart';
-import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/models/tv_details.dart';
 import 'package:movie_go/tmdb.dart';
@@ -41,6 +40,9 @@ class TVInfoPageState extends State<TVInfoPage> {
   @override
   Widget build(BuildContext context) {
     print("${_tvDetails?.name} : $tvId");
+    if (_tvDetails != null && _tvDetails.seasons != null && _tvDetails.seasons.length > 1) {
+      _tvDetails.seasons.sort((a, b) => DateTime.tryParse(a.airDate).compareTo(DateTime.tryParse(b.airDate)));
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(_tvDetails?.name ?? "Loading..."),
@@ -151,7 +153,7 @@ class TVInfoPageState extends State<TVInfoPage> {
                                   scrollDirection: Axis.horizontal,
                                   itemCount: _tvDetails.seasons.length,
                                   itemBuilder: (ctxt, index) {
-                                    return new SeasonDetail(_tvDetails.seasons[index]);
+                                    return new SeasonDetail(tvId, _tvDetails.seasons[index]);
                                   }),
                         ),
                         Padding(
@@ -234,7 +236,8 @@ class TVInfoPageState extends State<TVInfoPage> {
 
 class SeasonDetail extends StatelessWidget {
   final Seasons seasions;
-  SeasonDetail(this.seasions);
+  final int tvId;
+  SeasonDetail(this.tvId, this.seasions);
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +247,7 @@ class SeasonDetail extends StatelessWidget {
         width: 150.0,
         decoration: BoxDecoration(color: Theme.of(context).accentColor),
         child: new GestureDetector(
-          onTap: null,
+          onTap: () => MyNavigator.goToSeasonInfo(context, tvId, seasions.seasonNumber),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -272,7 +275,7 @@ class SeasonDetail extends StatelessWidget {
               ),
               CenterText(seasions.name, 14.0, true, Colors.white, 2),
               CenterText("Episodes: ${seasions.episodeCount}", 14.0, true, Colors.white, 2),
-              CenterText("Aired : ${seasions.airDate}", 14.0, true, Theme.of(context).primaryColor, 2),
+              CenterText("Aired : ${seasions.airDate ?? "NA"}", 14.0, true, Theme.of(context).primaryColor, 2),
             ],
           ),
         ),
