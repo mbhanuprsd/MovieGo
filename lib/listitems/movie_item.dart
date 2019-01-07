@@ -6,6 +6,9 @@ import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/movie_search_model.dart';
 import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/models/people_search_model.dart';
+import 'package:movie_go/models/people_tv_credits.dart';
+import 'package:movie_go/models/tv_details.dart';
+import 'package:movie_go/models/tv_search_model.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
@@ -42,6 +45,17 @@ class PeopleListItem extends StatelessWidget {
   }
 }
 
+class TvListItem extends StatelessWidget {
+  final TVInfo tvInfo;
+  TvListItem(this.tvInfo);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterListItem(tvInfo.posterPath, tvInfo.name, "Rating : ${tvInfo.voteAverage}/10 (${tvInfo.voteCount})",
+        "Released on : " + tvInfo.firstAirDate, tvInfo.overview, () => MyNavigator.goToTVInfo(context, tvInfo.id));
+  }
+}
+
 class PosterListItem extends StatelessWidget {
   final String imagePath;
   final String title;
@@ -50,8 +64,7 @@ class PosterListItem extends StatelessWidget {
   final String description;
   final Function callback;
 
-  PosterListItem(this.imagePath, this.title, this.subtitle1, this.subtitle2,
-      this.description, this.callback);
+  PosterListItem(this.imagePath, this.title, this.subtitle1, this.subtitle2, this.description, this.callback);
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +75,7 @@ class PosterListItem extends StatelessWidget {
         decoration: BoxDecoration(color: Colors.grey),
         child: ListTile(
           onTap: callback,
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           leading: (imagePath == null)
               ? Icon(
                   Icons.movie_filter,
@@ -79,16 +91,10 @@ class PosterListItem extends StatelessWidget {
           subtitle: new Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              subtitle1 == null
-                  ? Container()
-                  : CustomText(subtitle1, 12.0, false, Colors.white, 1),
-              subtitle2 == null
-                  ? Container()
-                  : CustomText(subtitle2, 12.0, false, Colors.white, 1),
+              subtitle1 == null ? Container() : CustomText(subtitle1, 12.0, false, Colors.white, 1),
+              subtitle2 == null ? Container() : CustomText(subtitle2, 12.0, false, Colors.white, 1),
               Padding(padding: EdgeInsets.only(top: 5.0)),
-              description == null
-                  ? new Container()
-                  : CustomText(description, 14.0, false, Colors.white, 2),
+              description == null ? new Container() : CustomText(description, 14.0, false, Colors.white, 2),
             ],
           ),
         ),
@@ -108,9 +114,26 @@ class FavMovieItem extends StatelessWidget {
         movieDetails.title,
         movieDetails.releaseDate,
         () => MyNavigator.goToMovieInfo(context, movieDetails.id),
-        () => AppUtils.showConditionalAlert(
-                context, 'Remove Bookmark?', null, "Yes", () {
+        () => AppUtils.showConditionalAlert(context, 'Remove Bookmark?', null, "Yes", () {
               FireStoreManager.toggleMovieBookMark(movieDetails.id);
+              Navigator.of(context).pop();
+            }, "No", () => Navigator.of(context).pop()));
+  }
+}
+
+class FavTvItem extends StatelessWidget {
+  final TVDetails tvDetails;
+  FavTvItem(this.tvDetails);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterViewItem(
+        tvDetails.posterPath,
+        tvDetails.name,
+        tvDetails.firstAirDate,
+        () => MyNavigator.goToTVInfo(context, tvDetails.id),
+        () => AppUtils.showConditionalAlert(context, 'Remove Bookmark?', null, "Yes", () {
+              FireStoreManager.toggleTVBookMark(tvDetails.id);
               Navigator.of(context).pop();
             }, "No", () => Navigator.of(context).pop()));
   }
@@ -127,8 +150,7 @@ class FavPersonItem extends StatelessWidget {
         personDetail.name,
         personDetail.knownForDepartment,
         () => MyNavigator.goToPersonInfo(context, personDetail.id),
-        () => AppUtils.showConditionalAlert(
-                context, 'Remove Bookmark?', null, "Yes", () {
+        () => AppUtils.showConditionalAlert(context, 'Remove Bookmark?', null, "Yes", () {
               FireStoreManager.togglePersonBookMark(personDetail.id);
               Navigator.of(context).pop();
             }, "No", () => Navigator.of(context).pop()));
@@ -141,12 +163,8 @@ class PersonCastItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PosterViewItem(
-        castDetail.posterPath,
-        castDetail.title,
-        castDetail.character,
-        () => MyNavigator.goToMovieInfo(context, castDetail.id),
-        null);
+    return PosterViewItem(castDetail.posterPath, castDetail.title, castDetail.character,
+        () => MyNavigator.goToMovieInfo(context, castDetail.id), null);
   }
 }
 
@@ -156,12 +174,30 @@ class PersonCrewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PosterViewItem(
-        _crewDetail.posterPath,
-        _crewDetail.title,
-        _crewDetail.department,
-        () => MyNavigator.goToMovieInfo(context, _crewDetail.id),
-        null);
+    return PosterViewItem(_crewDetail.posterPath, _crewDetail.title, _crewDetail.department,
+        () => MyNavigator.goToMovieInfo(context, _crewDetail.id), null);
+  }
+}
+
+class PersonTVCastItem extends StatelessWidget {
+  final TvCast castDetail;
+  PersonTVCastItem(this.castDetail);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterViewItem(castDetail.posterPath, castDetail.name, castDetail.character,
+        () => MyNavigator.goToTVInfo(context, castDetail.id), null);
+  }
+}
+
+class PersonTVCrewItem extends StatelessWidget {
+  final TvCrew _crewDetail;
+  PersonTVCrewItem(this._crewDetail);
+
+  @override
+  Widget build(BuildContext context) {
+    return PosterViewItem(_crewDetail.posterPath, _crewDetail.name, _crewDetail.department,
+        () => MyNavigator.goToTVInfo(context, _crewDetail.id), null);
   }
 }
 
@@ -171,8 +207,7 @@ class PosterViewItem extends StatelessWidget {
   final String subTitle;
   final Function callback;
   final Function longPressCallBack;
-  PosterViewItem(this.imagePath, this.title, this.subTitle, this.callback,
-      this.longPressCallBack);
+  PosterViewItem(this.imagePath, this.title, this.subTitle, this.callback, this.longPressCallBack);
 
   @override
   Widget build(BuildContext context) {
@@ -210,8 +245,7 @@ class PosterViewItem extends StatelessWidget {
                 padding: EdgeInsets.only(top: 5.0),
               ),
               CenterText(title, 14.0, true, Colors.white, 2),
-              CenterText(
-                  subTitle, 14.0, true, Theme.of(context).primaryColor, 2),
+              CenterText(subTitle, 14.0, true, Theme.of(context).primaryColor, 2),
             ],
           ),
         ),

@@ -10,6 +10,7 @@ import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/custom_models.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/people_info.dart';
+import 'package:movie_go/models/tv_details.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   FirebaseUser curentUser;
   List<MovieDetails> favMovieList;
   List<PersonDetail> favPersonList;
+  List<TVDetails> favTvList;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   final drawerItems = [
     new DrawerItem("Search Movies", Icons.movie_filter),
     new DrawerItem("Search People", Icons.account_circle),
+    new DrawerItem("Search TV", Icons.live_tv),
     new DrawerItem("Developer", Icons.info),
     new DrawerItem("Logout", Icons.exit_to_app)
   ];
@@ -54,9 +57,12 @@ class _HomePageState extends State<HomePage> {
         MyNavigator.goToPeopleSearch(context);
         break;
       case 2:
-        MyNavigator.goToDeveloperInfo(context, curentUser?.displayName);
+        MyNavigator.goToTVSearch(context);
         break;
       case 3:
+        MyNavigator.goToDeveloperInfo(context, curentUser?.displayName);
+        break;
+      case 4:
         logout();
         break;
     }
@@ -64,8 +70,7 @@ class _HomePageState extends State<HomePage> {
 
   void logout() {
     _auth.signOut().then((_) {
-      AppUtils.showConditionalAlert(
-          context, "Do you want to logout?", null, "Yes", () {
+      AppUtils.showConditionalAlert(context, "Do you want to logout?", null, "Yes", () {
         MyNavigator.goToLogin(context);
       }, "No", () => Navigator.of(context).pop());
     });
@@ -84,10 +89,7 @@ class _HomePageState extends State<HomePage> {
           ),
           title: new Text(
             d.title,
-            style: new TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).accentColor),
+            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
           ),
           selected: i == _selectedIndex,
           onTap: () {
@@ -120,10 +122,8 @@ class _HomePageState extends State<HomePage> {
         child: new Column(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-              accountName: CustomText(curentUser?.displayName ?? "", 18.0, true,
-                  Theme.of(context).primaryColor, 1),
-              accountEmail: CustomText(curentUser?.email ?? "", 18.0, true,
-                  Theme.of(context).primaryColor, 1),
+              accountName: CustomText(curentUser?.displayName ?? "", 18.0, true, Theme.of(context).primaryColor, 1),
+              accountEmail: CustomText(curentUser?.email ?? "", 18.0, true, Theme.of(context).primaryColor, 1),
               currentAccountPicture: IconButton(
                 icon: Icon(
                   Icons.account_circle,
@@ -137,8 +137,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
               child: Container(
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColor),
+                decoration: BoxDecoration(color: Theme.of(context).primaryColor),
                 child: new Column(
                   children: getDrawerOptions(context),
                 ),
@@ -173,11 +172,7 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Center(
                   child: CenterText(
-                      "Welcome ${curentUser == null ? "" : curentUser.displayName}!",
-                      16.0,
-                      true,
-                      Colors.white,
-                      2),
+                      "Welcome ${curentUser == null ? "" : curentUser.displayName}!", 16.0, true, Colors.white, 2),
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 30.0),
@@ -187,6 +182,14 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.only(top: 20.0),
                 ),
                 buildFavMovieList(context),
+                Padding(
+                  padding: EdgeInsets.only(top: 30.0),
+                ),
+                CustomText("Favorite TV:", 20.0, true, Colors.white, 1),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                ),
+                buildFavTvList(context),
                 Padding(
                   padding: EdgeInsets.only(top: 30.0),
                 ),
@@ -207,9 +210,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       height: 200.0,
       child: (favPersonList == null || favPersonList?.length == 0)
-          ? Center(
-              child: CenterText("No Favourites", 20.0, true,
-                  Theme.of(context).primaryColor, 1))
+          ? Center(child: CenterText("No Favourites", 20.0, true, Theme.of(context).primaryColor, 1))
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: favPersonList.length,
@@ -223,9 +224,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       height: 200.0,
       child: (favMovieList == null || favMovieList?.length == 0)
-          ? Center(
-              child: CenterText("No Favourites", 20.0, true,
-                  Theme.of(context).primaryColor, 1))
+          ? Center(child: CenterText("No Favourites", 20.0, true, Theme.of(context).primaryColor, 1))
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: favMovieList.length,
@@ -235,24 +234,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget buildFavTvList(BuildContext context) {
+    return Container(
+      height: 200.0,
+      child: (favTvList == null || favTvList?.length == 0)
+          ? Center(child: CenterText("No Favourites", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: favTvList.length,
+              itemBuilder: (ctxt, index) {
+                return new FavTvItem(favTvList[index]);
+              }),
+    );
+  }
+
   bool bookmarksAvailable = false;
   fetchBookmarks() {
-    Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) {
+    Firestore.instance.collection(curentUser.uid)?.snapshots()?.listen((qs) async {
       favMovieList = new List();
       favPersonList = new List();
-      fetchMovieBookmarks(qs);
-      fetchPeopleBookmarks(qs);
+      await fetchMovieBookmarks(qs);
+      await fetchPeopleBookmarks(qs);
+      await fetchTVBookmarks(qs);
     });
   }
 
-  void fetchPeopleBookmarks(QuerySnapshot qs) {
+  Future<void> fetchPeopleBookmarks(QuerySnapshot qs) async {
     bookmarksAvailable = false;
     if (qs != null && qs.documents != null && qs.documents.length > 0) {
-      DocumentSnapshot docSnap = qs.documents?.firstWhere((doc) =>
-          doc?.data?.containsKey(FireStoreManager.fsPersonBookmarkDoc));
+      DocumentSnapshot docSnap =
+          qs.documents?.firstWhere((doc) => doc?.data?.containsKey(FireStoreManager.fsPersonBookmarkDoc));
       if (docSnap != null) {
-        String bookMarksString =
-            docSnap.data[FireStoreManager.fsPersonBookmarkDoc].toString();
+        String bookMarksString = docSnap.data[FireStoreManager.fsPersonBookmarkDoc].toString();
         if (bookMarksString.length > 0) {
           List<String> strings = bookMarksString.split(',').toList();
           if (strings != null && strings.length > 0) {
@@ -270,14 +283,34 @@ class _HomePageState extends State<HomePage> {
     bookmarksAvailable = false;
   }
 
-  void fetchMovieBookmarks(QuerySnapshot qs) {
+  fetchPersonDetails(int personId) {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/person/$personId?api_key=${TMDB.key}&language=en-US"))
+        .then((request) => request.close()) // sends the request
+        .then((response) {
+      response.transform(utf8.decoder).join().then((detailsJson) {
+        Map mapJson = json.decode(detailsJson);
+        PersonDetail _personDetails = PersonDetail.fromJson(mapJson);
+        favPersonList.add(_personDetails);
+        favPersonList = favPersonList.toSet().toList();
+        favPersonList.sort((a, b) => b.id.compareTo(a.id));
+        setState(() {});
+      }).catchError((e) {
+        print(e);
+        favPersonList = new List();
+        setState(() {});
+      });
+    });
+  }
+
+  Future<void> fetchMovieBookmarks(QuerySnapshot qs) async {
     bookmarksAvailable = false;
     if (qs != null && qs.documents != null && qs.documents.length > 0) {
-      DocumentSnapshot docSnap = qs.documents?.firstWhere(
-          (doc) => doc?.data?.containsKey(FireStoreManager.fsMovieBookmarkDoc));
+      DocumentSnapshot docSnap =
+          qs.documents?.firstWhere((doc) => doc?.data?.containsKey(FireStoreManager.fsMovieBookmarkDoc));
       if (docSnap != null) {
-        String bookMarksString =
-            docSnap.data[FireStoreManager.fsMovieBookmarkDoc].toString();
+        String bookMarksString = docSnap.data[FireStoreManager.fsMovieBookmarkDoc].toString();
         if (bookMarksString.length > 0) {
           List<String> strings = bookMarksString.split(',').toList();
           if (strings != null && strings.length > 0) {
@@ -297,8 +330,7 @@ class _HomePageState extends State<HomePage> {
 
   fetchMovieDetails(int movieId) {
     HttpClient()
-        .getUrl(Uri.parse(
-            "https://api.themoviedb.org/3/movie/$movieId?api_key=${TMDB.key}")) //
+        .getUrl(Uri.parse("https://api.themoviedb.org/3/movie/$movieId?api_key=${TMDB.key}")) //
         // produces a request object
         .then((request) => request.close()) // sends the request
         .then((response) {
@@ -317,22 +349,46 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  fetchPersonDetails(int personId) {
+  Future<void> fetchTVBookmarks(QuerySnapshot qs) async {
+    bookmarksAvailable = false;
+    if (qs != null && qs.documents != null && qs.documents.length > 0) {
+      DocumentSnapshot docSnap =
+          qs.documents?.firstWhere((doc) => doc?.data?.containsKey(FireStoreManager.fsTVBookmarkDoc));
+      if (docSnap != null) {
+        String bookMarksString = docSnap.data[FireStoreManager.fsTVBookmarkDoc].toString();
+        if (bookMarksString.length > 0) {
+          List<String> strings = bookMarksString.split(',').toList();
+          if (strings != null && strings.length > 0) {
+            List<int> bookMarks = strings.map((id) => int.parse(id)).toList();
+            favTvList = new List();
+            for (var id in bookMarks) {
+              fetchTvDetails(id);
+            }
+            bookmarksAvailable = true;
+          }
+        }
+      }
+    }
+    if (!bookmarksAvailable) favMovieList = new List();
+    bookmarksAvailable = false;
+  }
+
+  fetchTvDetails(int tvId) {
     HttpClient()
-        .getUrl(Uri.parse("https://api.themoviedb"
-            ".org/3/person/$personId?api_key=${TMDB.key}&language=en-US"))
+        .getUrl(Uri.parse("https://api.themoviedb.org/3/tv/$tvId?api_key=${TMDB.key}")) //
+        // produces a request object
         .then((request) => request.close()) // sends the request
         .then((response) {
       response.transform(utf8.decoder).join().then((detailsJson) {
         Map mapJson = json.decode(detailsJson);
-        PersonDetail _personDetails = PersonDetail.fromJson(mapJson);
-        favPersonList.add(_personDetails);
-        favPersonList = favPersonList.toSet().toList();
-        favPersonList.sort((a, b) => b.id.compareTo(a.id));
+        TVDetails _tvDetails = TVDetails.fromJson(mapJson);
+        favTvList.add(_tvDetails);
+        favTvList = favTvList.toSet().toList();
+        favTvList.sort((a, b) => b.id.compareTo(a.id));
         setState(() {});
       }).catchError((e) {
         print(e);
-        favPersonList = new List();
+        favTvList = new List();
         setState(() {});
       });
     });

@@ -7,6 +7,7 @@ import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/people_info.dart';
+import 'package:movie_go/models/people_tv_credits.dart';
 import 'package:movie_go/models/person_images_response.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
@@ -28,6 +29,7 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
   String aliases;
   List<String> images;
   MovieCredits _movieCredits;
+  PeopleTvCredits _tvCredits;
 
   @override
   void initState() {
@@ -42,12 +44,10 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
   @override
   Widget build(BuildContext context) {
     if (_movieCredits != null && _movieCredits.cast != null) {
-      _movieCredits.cast.sort((a, b) => DateTime.tryParse(b.releaseDate)
-          .compareTo(DateTime.tryParse(a.releaseDate)));
+      _movieCredits.cast.sort((a, b) => DateTime.tryParse(b.releaseDate).compareTo(DateTime.tryParse(a.releaseDate)));
     }
     if (_movieCredits != null && _movieCredits.crew != null) {
-      _movieCredits.crew.sort((a, b) => DateTime.tryParse(b.releaseDate)
-          .compareTo(DateTime.tryParse(a.releaseDate)));
+      _movieCredits.crew.sort((a, b) => DateTime.tryParse(b.releaseDate).compareTo(DateTime.tryParse(a.releaseDate)));
     }
     return Scaffold(
       appBar: AppBar(
@@ -77,16 +77,13 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                 Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: new CachedNetworkImageProvider(
-                          ImageUtils.getFullImagePath(
-                              _personDetail.profilePath)),
+                      image: new CachedNetworkImageProvider(ImageUtils.getFullImagePath(_personDetail.profilePath)),
                       fit: BoxFit.fitHeight,
                     ),
                   ),
                 ),
                 Container(
-                  decoration:
-                      BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
+                  decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -99,8 +96,7 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             CachedNetworkImage(
-                              imageUrl: ImageUtils.getFullImagePath(
-                                  _personDetail.profilePath),
+                              imageUrl: ImageUtils.getFullImagePath(_personDetail.profilePath),
                               placeholder: new CircularProgressIndicator(),
                               errorWidget: new Icon(Icons.person),
                               height: 200.0,
@@ -112,51 +108,32 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  CustomText(_personDetail.name, 20.0, true,
-                                      Colors.white, 2),
+                                  CustomText(_personDetail.name, 20.0, true, Colors.white, 2),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10.0),
+                                  ),
+                                  CustomText("Department: ${_personDetail.knownForDepartment}", 16.0, false,
+                                      Colors.white, null),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10.0),
+                                  ),
+                                  CustomText("Gender: ${_personDetail.gender == 2 ? "Male" : "Female"}", 16.0, false,
+                                      Colors.white, null),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 10.0),
+                                  ),
+                                  CustomText("Born: ${_personDetail.birthday}", 16.0, false, Colors.white, null),
                                   Padding(
                                     padding: EdgeInsets.only(top: 10.0),
                                   ),
                                   CustomText(
-                                      "Department: ${_personDetail.knownForDepartment}",
-                                      16.0,
-                                      false,
-                                      Colors.white,
-                                      null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  CustomText(
-                                      "Gender: ${_personDetail.gender == 2 ? "Male" : "Female"}",
-                                      16.0,
-                                      false,
-                                      Colors.white,
-                                      null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  CustomText("Born: ${_personDetail.birthday}",
-                                      16.0, false, Colors.white, null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  CustomText(
-                                      "Birth Place: ${_personDetail.placeOfBirth}",
-                                      16.0,
-                                      false,
-                                      Colors.white,
-                                      null),
+                                      "Birth Place: ${_personDetail.placeOfBirth}", 16.0, false, Colors.white, null),
                                   Padding(
                                     padding: EdgeInsets.only(top: 10.0),
                                   ),
                                   _personDetail.deathday == null
                                       ? Container()
-                                      : CustomText(
-                                          "Death: ${_personDetail.deathday}",
-                                          16.0,
-                                          false,
-                                          Colors.white,
-                                          null),
+                                      : CustomText("Death: ${_personDetail.deathday}", 16.0, false, Colors.white, null),
                                 ],
                               ),
                             ),
@@ -165,16 +142,13 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
-                        _personDetail.alsoKnownAs == null ||
-                                _personDetail.alsoKnownAs?.length == 0
+                        _personDetail.alsoKnownAs == null || _personDetail.alsoKnownAs?.length == 0
                             ? Container()
-                            : CustomText("Also knows as:\n\n$aliases", 16.0,
-                                false, Colors.white, null),
+                            : CustomText("Also knows as:\n\n$aliases", 16.0, false, Colors.white, null),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
-                        CustomText("Biography:\n\n${_personDetail.biography}",
-                            16.0, false, Colors.white, null),
+                        CustomText("Biography:\n\n${_personDetail.biography}", 16.0, false, Colors.white, null),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
@@ -185,9 +159,7 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                         Container(
                           height: 250.0,
                           child: (images == null || images?.length == 0)
-                              ? Center(
-                                  child: CenterText("No Images", 20.0, true,
-                                      Theme.of(context).primaryColor, 1))
+                              ? Center(child: CenterText("No Images", 20.0, true, Theme.of(context).primaryColor, 1))
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: images.length,
@@ -195,10 +167,8 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                                     return Container(
                                       padding: EdgeInsets.all(10.0),
                                       child: CachedNetworkImage(
-                                        imageUrl: ImageUtils.getFullImagePath(
-                                            images[index]),
-                                        placeholder:
-                                            new CircularProgressIndicator(),
+                                        imageUrl: ImageUtils.getFullImagePath(images[index]),
+                                        placeholder: new CircularProgressIndicator(),
                                         errorWidget: new Icon(Icons.person),
                                         height: 200.0,
                                       ),
@@ -208,51 +178,73 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
-                        CustomText("Cast:", 20.0, true, Colors.white, null),
+                        CustomText("Movie Cast:", 20.0, true, Colors.white, null),
                         Container(
                           height: 240.0,
-                          child: (_movieCredits?.cast == null ||
-                                  _movieCredits?.cast?.length == 0)
+                          child: (_movieCredits?.cast == null || _movieCredits?.cast?.length == 0)
                               ? _movieCredits == null
                                   ? Center(child: CustomProgress(context))
                                   : Center(
-                                      child: CenterText(
-                                          "Not Available",
-                                          20.0,
-                                          true,
-                                          Theme.of(context).primaryColor,
-                                          1))
+                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: _movieCredits.cast.length,
                                   itemBuilder: (ctxt, index) {
-                                    return new PersonCastItem(
-                                        _movieCredits.cast[index]);
+                                    return new PersonCastItem(_movieCredits.cast[index]);
                                   }),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 2.0),
                         ),
-                        CustomText("Crew:", 20.0, true, Colors.white, null),
+                        CustomText("Movie Crew:", 20.0, true, Colors.white, null),
                         Container(
                           height: 240.0,
-                          child: (_movieCredits?.crew == null ||
-                                  _movieCredits?.crew?.length == 0)
+                          child: (_movieCredits?.crew == null || _movieCredits?.crew?.length == 0)
                               ? _movieCredits == null
                                   ? Center(child: CustomProgress(context))
                                   : Center(
-                                      child: CenterText(
-                                          "Not Available",
-                                          20.0,
-                                          true,
-                                          Theme.of(context).primaryColor,
-                                          1))
+                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: _movieCredits.crew.length,
                                   itemBuilder: (ctxt, index) {
-                                    return new PersonCrewItem(
-                                        _movieCredits.crew[index]);
+                                    return new PersonCrewItem(_movieCredits.crew[index]);
+                                  }),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                        ),
+                        CustomText("TV Cast:", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 240.0,
+                          child: (_tvCredits?.cast == null || _tvCredits?.cast?.length == 0)
+                              ? _tvCredits == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _tvCredits.cast.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new PersonTVCastItem(_tvCredits.cast[index]);
+                                  }),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
+                        ),
+                        CustomText("TV Crew:", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 240.0,
+                          child: (_tvCredits?.crew == null || _tvCredits?.crew?.length == 0)
+                              ? _tvCredits == null
+                                  ? Center(child: CustomProgress(context))
+                                  : Center(
+                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _tvCredits.crew.length,
+                                  itemBuilder: (ctxt, index) {
+                                    return new PersonTVCrewItem(_tvCredits.crew[index]);
                                   }),
                         ),
                       ],
@@ -273,6 +265,7 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
       response.transform(utf8.decoder).join().then((detailsJson) {
         fetchImages();
         fetchMovieCredits();
+        fetchTvCredits();
 
         Map mapJson = json.decode(detailsJson);
         _personDetail = PersonDetail.fromJson(mapJson);
@@ -311,6 +304,23 @@ class PeopleInfoPageState extends State<PeopleInfoPage> {
       response.transform(utf8.decoder).join().then((detailsJson) {
         Map mapJson = json.decode(detailsJson);
         _movieCredits = MovieCredits.fromJson(mapJson);
+        if (mounted) setState(() {});
+      }).catchError((e) {
+        print(e);
+      });
+    });
+  }
+
+  fetchTvCredits() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/person/$peopleId/tv_credits?api_key"
+            "=${TMDB.key}&language=en-US"))
+        .then((request) => request.close()) // sends the request
+        .then((response) {
+      response.transform(utf8.decoder).join().then((detailsJson) {
+        Map mapJson = json.decode(detailsJson);
+        _tvCredits = PeopleTvCredits.fromJson(mapJson);
         if (mounted) setState(() {});
       }).catchError((e) {
         print(e);
