@@ -3,7 +3,7 @@ import 'package:movie_go/pages/splash_page.dart';
 
 void main() => runApp(MyApp());
 
-var primaryColor = Colors.amber;
+var primaryColor = Colors.orange;
 var accentColor = Colors.black;
 
 class MyApp extends StatelessWidget {
