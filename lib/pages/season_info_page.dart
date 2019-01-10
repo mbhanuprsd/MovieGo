@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
+import 'package:movie_go/listitems/movie_item.dart';
+import 'package:movie_go/models/movie_video_model.dart';
 import 'package:movie_go/models/season_info.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
@@ -23,6 +25,7 @@ class _SeasonInfoPageState extends State<SeasonInfoPage> {
   final int tvId;
   _SeasonInfoPageState(this.tvId, this.seasonNumber);
   SeasonInfo _seasonInfo;
+  MovieVideoModel _movieVideoModel;
 
   @override
   void initState() {
@@ -59,24 +62,77 @@ class _SeasonInfoPageState extends State<SeasonInfoPage> {
                 Container(
                   decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
                 ),
-                Column(
-                  children: <Widget>[
-                    _seasonInfo?.episodes == null
-                        ? Container()
-                        : Expanded(
-                            child: Scrollbar(
-                              child: new ListView.builder(
-                                  itemCount: _seasonInfo.episodes.length,
-                                  itemBuilder: (BuildContext ctxt, int index) {
-                                    return new EpisodeListItem(_seasonInfo.episodes[index]);
-                                  }),
+                Container(
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                      ),
+                      CustomText("Videos :", 20.0, true, Colors.white, null),
+                      buildVideos(context),
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                      ),
+                      CustomText("Episodes : ${_seasonInfo?.episodes?.length}", 20.0, true, Colors.white, null),
+                      _seasonInfo?.episodes == null
+                          ? Container()
+                          : Expanded(
+                              child: Scrollbar(
+                                child: GridView.count(
+                                  scrollDirection: Axis.horizontal,
+                                  crossAxisCount: 1,
+                                  childAspectRatio: 1.2,
+                                  children: _seasonInfo.episodes.map((episode) {
+                                    return new EpisodeListItem(episode);
+                                  }).toList(),
+                                ),
+                                /*new ListView
+                                .builder(
+                                    itemCount: _seasonInfo.episodes.length,
+                                    itemBuilder: (BuildContext ctxt, int index) {
+                                      return new EpisodeListItem(_seasonInfo.episodes[index]);
+                                    }),*/
+                              ),
                             ),
-                          ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
     );
+  }
+
+  Container buildVideos(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (_movieVideoModel?.results == null || _movieVideoModel?.results?.length == 0)
+          ? _movieVideoModel == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _movieVideoModel.results.length,
+              itemBuilder: (ctxt, index) {
+                return VideoItem(_movieVideoModel.results[index]);
+              }),
+    );
+  }
+
+  fetchVideos() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/tv/$tvId/season/$seasonNumber/videos?api_key=${TMDB.key}&language=en-US"))
+        .then((request) => request.close())
+        .then((response) {
+      response.transform(utf8.decoder).join().then((creditsJson) {
+        Map videosmap = json.decode(creditsJson);
+        _movieVideoModel = MovieVideoModel.fromJson(videosmap);
+        _movieVideoModel.results = _movieVideoModel.results.where((video) => video.site == "YouTube").toList();
+        if (mounted) setState(() {});
+      });
+    });
   }
 
   fetchSeasonDetails() {
@@ -86,6 +142,7 @@ class _SeasonInfoPageState extends State<SeasonInfoPage> {
         .then((request) => request.close()) // sends the request
         .then((response) {
       response.transform(utf8.decoder).join().then((detailsJson) {
+        fetchVideos();
         Map mapJson = json.decode(detailsJson);
         _seasonInfo = SeasonInfo.fromJson(mapJson);
         if (mounted) setState(() {});
@@ -106,23 +163,21 @@ class EpisodeListItem extends StatelessWidget {
       elevation: 8.0,
       margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
       child: Container(
-        decoration: BoxDecoration(color: Colors.grey),
+        padding: EdgeInsets.all(20.0),
+        decoration: BoxDecoration(color: Colors.black),
         child: Padding(
           padding: EdgeInsets.all(10.0),
           child: Column(
             children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: (episode.stillPath == null)
-                    ? Icon(
-                        Icons.live_tv,
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: ImageUtils.getFullImagePath(episode.stillPath),
-                        placeholder: new CircularProgressIndicator(),
-                        errorWidget: new Icon(Icons.error),
-                      ),
-              ),
+              (episode.stillPath == null)
+                  ? Icon(
+                      Icons.live_tv,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: ImageUtils.getFullImagePath(episode.stillPath),
+                      placeholder: new CircularProgressIndicator(),
+                      errorWidget: new Icon(Icons.error),
+                    ),
               CustomText("${episode.episodeNumber}. ${episode.name}", 20.0, true, Colors.white, 2),
               Padding(padding: EdgeInsets.only(top: 10.0)),
               Row(

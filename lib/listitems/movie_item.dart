@@ -4,6 +4,7 @@ import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/models/movie_details.dart';
 import 'package:movie_go/models/movie_search_model.dart';
+import 'package:movie_go/models/movie_video_model.dart';
 import 'package:movie_go/models/people_info.dart';
 import 'package:movie_go/models/people_search_model.dart';
 import 'package:movie_go/models/people_tv_credits.dart';
@@ -12,6 +13,7 @@ import 'package:movie_go/models/tv_search_model.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieListItem extends StatelessWidget {
   final MovieInfo movieInfo;
@@ -198,6 +200,68 @@ class PersonTVCrewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return PosterViewItem(_crewDetail.posterPath, _crewDetail.name, _crewDetail.department,
         () => MyNavigator.goToTVInfo(context, _crewDetail.id), null);
+  }
+}
+
+class VideoItem extends StatelessWidget {
+  final MovieVideo _video;
+  VideoItem(this._video);
+
+  @override
+  Widget build(BuildContext context) {
+    String imageUrl = "http://img.youtube.com/vi/${_video.key}/0.jpg";
+    String youtubeUrl = "https://www.youtube.com/watch?v=${_video.key}";
+    return Card(
+      elevation: 4.0,
+      child: Container(
+        width: 200.0,
+        decoration: BoxDecoration(color: Theme.of(context).accentColor),
+        child: new GestureDetector(
+          onTap: () => _launchYoutube(context, youtubeUrl),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              (imageUrl == null)
+                  ? Icon(
+                      Icons.video_library,
+                      color: Theme.of(context).primaryColor,
+                      size: 120.0,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: Icon(
+                        Icons.video_library,
+                        color: Theme.of(context).primaryColor,
+                        size: 120.0,
+                      ),
+                      errorWidget: Icon(
+                        Icons.error,
+                        color: Theme.of(context).primaryColor,
+                        size: 120.0,
+                      ),
+                      height: 150.0,
+                    ),
+              Padding(
+                padding: EdgeInsets.only(top: 5.0),
+              ),
+              CenterText(_video.name, 14.0, true, Colors.white, 2),
+              CenterText(_video.type, 14.0, true, Theme.of(context).primaryColor, 2),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+_launchYoutube(BuildContext context, String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    AppUtils.showSimpleAlert(context, "Cannot open video");
   }
 }
 

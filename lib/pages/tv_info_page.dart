@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/cast_crew_item.dart';
+import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
+import 'package:movie_go/models/movie_video_model.dart';
 import 'package:movie_go/models/tv_details.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
@@ -26,6 +28,7 @@ class TVInfoPageState extends State<TVInfoPage> {
   TVDetails _tvDetails;
   CastCrewDetails castCrewDetails;
   bool isBookmarked = false;
+  MovieVideoModel _movieVideoModel;
 
   @override
   void initState() {
@@ -87,53 +90,7 @@ class TVInfoPageState extends State<TVInfoPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            CachedNetworkImage(
-                              imageUrl: ImageUtils.getFullImagePath(_tvDetails.posterPath),
-                              placeholder: new CircularProgressIndicator(),
-                              errorWidget: new Icon(Icons.live_tv),
-                              height: 200.0,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20.0),
-                            ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  CustomText(
-                                      _tvDetails.originalName == _tvDetails.name
-                                          ? _tvDetails.originalName
-                                          : _tvDetails.originalName + " (${_tvDetails.name})",
-                                      20.0,
-                                      true,
-                                      Colors.white,
-                                      2),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  CustomText("Aired : ${_tvDetails.firstAirDate} - ${_tvDetails.lastAirDate}", 16.0,
-                                      false, Colors.white, null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  StarRating(
-                                    starCount: 5,
-                                    rating: _tvDetails.voteAverage / 2.0,
-                                  ),
-                                  CustomText("Votes : ${_tvDetails.voteCount}", 16.0, false, Colors.white, null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 20.0),
-                                  ),
-                                  CustomText(
-                                      "No of Seasons : ${_tvDetails.numberOfSeasons}", 16.0, false, Colors.white, 2),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                        buildTvInfo(),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
@@ -142,62 +99,141 @@ class TVInfoPageState extends State<TVInfoPage> {
                           padding: EdgeInsets.only(top: 20.0),
                         ),
                         CustomText("Seasons :", 20.0, true, Colors.white, null),
-                        Container(
-                          height: 240.0,
-                          child: (_tvDetails?.seasons == null || _tvDetails?.seasons?.length == 0)
-                              ? _tvDetails?.seasons == null
-                                  ? Center(child: CustomProgress(context))
-                                  : Center(
-                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _tvDetails.seasons.length,
-                                  itemBuilder: (ctxt, index) {
-                                    return new SeasonDetail(tvId, _tvDetails.seasons[index]);
-                                  }),
-                        ),
+                        buildSeasons(context),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
                         CustomText("Cast :", 20.0, true, Colors.white, null),
-                        Container(
-                          height: 240.0,
-                          child: (castCrewDetails?.cast == null || castCrewDetails?.cast?.length == 0)
-                              ? castCrewDetails == null
-                                  ? Center(child: CustomProgress(context))
-                                  : Center(
-                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: castCrewDetails.cast.length,
-                                  itemBuilder: (ctxt, index) {
-                                    return new CastItem(castCrewDetails.cast[index]);
-                                  }),
-                        ),
+                        buildCast(context),
                         Padding(
                           padding: EdgeInsets.only(top: 2.0),
                         ),
                         CustomText("Crew :", 20.0, true, Colors.white, null),
-                        Container(
-                          height: 240.0,
-                          child: (castCrewDetails?.crew == null || castCrewDetails?.crew?.length == 0)
-                              ? castCrewDetails == null
-                                  ? Center(child: CustomProgress(context))
-                                  : Center(
-                                      child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: castCrewDetails.crew.length,
-                                  itemBuilder: (ctxt, index) {
-                                    return new CrewItem(castCrewDetails.crew[index]);
-                                  }),
+                        buildCrew(context),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
                         ),
+                        CustomText("Videos :", 20.0, true, Colors.white, null),
+                        buildVideos(context),
                       ],
                     ),
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  Container buildVideos(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (_movieVideoModel?.results == null || _movieVideoModel?.results?.length == 0)
+          ? _movieVideoModel == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _movieVideoModel.results.length,
+              itemBuilder: (ctxt, index) {
+                return VideoItem(_movieVideoModel.results[index]);
+              }),
+    );
+  }
+
+  Container buildCrew(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (castCrewDetails?.crew == null || castCrewDetails?.crew?.length == 0)
+          ? castCrewDetails == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: castCrewDetails.crew.length,
+              itemBuilder: (ctxt, index) {
+                return new CrewItem(castCrewDetails.crew[index]);
+              }),
+    );
+  }
+
+  Container buildCast(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (castCrewDetails?.cast == null || castCrewDetails?.cast?.length == 0)
+          ? castCrewDetails == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: castCrewDetails.cast.length,
+              itemBuilder: (ctxt, index) {
+                return new CastItem(castCrewDetails.cast[index]);
+              }),
+    );
+  }
+
+  Container buildSeasons(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (_tvDetails?.seasons == null || _tvDetails?.seasons?.length == 0)
+          ? _tvDetails?.seasons == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _tvDetails.seasons.length,
+              itemBuilder: (ctxt, index) {
+                return new SeasonDetail(tvId, _tvDetails.seasons[index]);
+              }),
+    );
+  }
+
+  Row buildTvInfo() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        CachedNetworkImage(
+          imageUrl: ImageUtils.getFullImagePath(_tvDetails.posterPath),
+          placeholder: new CircularProgressIndicator(),
+          errorWidget: new Icon(Icons.live_tv),
+          height: 200.0,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20.0),
+        ),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CustomText(
+                  _tvDetails.originalName == _tvDetails.name
+                      ? _tvDetails.originalName
+                      : _tvDetails.originalName + " (${_tvDetails.name})",
+                  20.0,
+                  true,
+                  Colors.white,
+                  2),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              CustomText(
+                  "Aired : ${_tvDetails.firstAirDate} - ${_tvDetails.lastAirDate}", 16.0, false, Colors.white, null),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              StarRating(
+                starCount: 5,
+                rating: _tvDetails.voteAverage / 2.0,
+              ),
+              CustomText("Votes : ${_tvDetails.voteCount}", 16.0, false, Colors.white, null),
+              Padding(
+                padding: EdgeInsets.only(top: 20.0),
+              ),
+              CustomText("No of Seasons : ${_tvDetails.numberOfSeasons}", 16.0, false, Colors.white, 2),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -226,8 +262,24 @@ class TVInfoPageState extends State<TVInfoPage> {
         .then((request) => request.close())
         .then((response) {
       response.transform(utf8.decoder).join().then((creditsJson) {
+        fetchVideos();
         Map creditsmap = json.decode(creditsJson);
         castCrewDetails = CastCrewDetails.fromJson(creditsmap);
+        if (mounted) setState(() {});
+      });
+    });
+  }
+
+  fetchVideos() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/tv/$tvId/videos?api_key=${TMDB.key}&language=en-US"))
+        .then((request) => request.close())
+        .then((response) {
+      response.transform(utf8.decoder).join().then((creditsJson) {
+        Map videosmap = json.decode(creditsJson);
+        _movieVideoModel = MovieVideoModel.fromJson(videosmap);
+        _movieVideoModel.results = _movieVideoModel.results.where((video) => video.site == "YouTube").toList();
         if (mounted) setState(() {});
       });
     });

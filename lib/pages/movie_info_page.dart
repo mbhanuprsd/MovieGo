@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:movie_go/custom_views/custom_views.dart';
 import 'package:movie_go/firestore/firestore_manager.dart';
 import 'package:movie_go/listitems/cast_crew_item.dart';
+import 'package:movie_go/listitems/movie_item.dart';
 import 'package:movie_go/models/cast_crew_details.dart';
 import 'package:movie_go/models/movie_details.dart';
+import 'package:movie_go/models/movie_video_model.dart';
 import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
@@ -26,6 +28,7 @@ class MovieInfoPageState extends State<MovieInfoPage> {
   MovieDetails _movieDetails;
   String generes;
   CastCrewDetails castCrewDetails;
+  MovieVideoModel _movieVideoModel;
   bool isBookmarked = false;
 
   @override
@@ -69,18 +72,14 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                 Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: new CachedNetworkImageProvider(
-                          ImageUtils.getFullImagePath(
-                              _movieDetails.backdropPath == null
-                                  ? _movieDetails.posterPath
-                                  : _movieDetails.backdropPath)),
+                      image: new CachedNetworkImageProvider(ImageUtils.getFullImagePath(
+                          _movieDetails.backdropPath == null ? _movieDetails.posterPath : _movieDetails.backdropPath)),
                       fit: BoxFit.fitHeight,
                     ),
                   ),
                 ),
                 Container(
-                  decoration:
-                      BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
+                  decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -89,120 +88,26 @@ class MovieInfoPageState extends State<MovieInfoPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            CachedNetworkImage(
-                              imageUrl: ImageUtils.getFullImagePath(
-                                  _movieDetails.posterPath),
-                              placeholder: new CircularProgressIndicator(),
-                              errorWidget: new Icon(Icons.movie_filter),
-                              height: 200.0,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20.0),
-                            ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  CustomText(
-                                      _movieDetails.originalTitle ==
-                                              _movieDetails.title
-                                          ? _movieDetails.originalTitle
-                                          : _movieDetails.originalTitle +
-                                              " (${_movieDetails.title})",
-                                      20.0,
-                                      true,
-                                      Colors.white,
-                                      2),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  CustomText(
-                                      "Release Date : ${_movieDetails.releaseDate}",
-                                      16.0,
-                                      false,
-                                      Colors.white,
-                                      null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 10.0),
-                                  ),
-                                  StarRating(
-                                    starCount: 5,
-                                    rating: _movieDetails.voteAverage / 2.0,
-                                  ),
-                                  CustomText(
-                                      "Votes : ${_movieDetails.voteCount}",
-                                      16.0,
-                                      false,
-                                      Colors.white,
-                                      null),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 20.0),
-                                  ),
-                                  CustomText("Genre : $generes", 16.0, false,
-                                      Colors.white, 2),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                        buildMovieInfo(),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
-                        CustomText("Description : \n${_movieDetails.overview}",
-                            16.0, false, Colors.white, null),
+                        CustomText("Description : \n${_movieDetails.overview}", 16.0, false, Colors.white, null),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
                         ),
                         CustomText("Cast :", 20.0, true, Colors.white, null),
-                        Container(
-                          height: 240.0,
-                          child: (castCrewDetails?.cast == null ||
-                                  castCrewDetails?.cast?.length == 0)
-                              ? castCrewDetails == null
-                                  ? Center(child: CustomProgress(context))
-                                  : Center(
-                                      child: CenterText(
-                                          "Not Available",
-                                          20.0,
-                                          true,
-                                          Theme.of(context).primaryColor,
-                                          1))
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: castCrewDetails.cast.length,
-                                  itemBuilder: (ctxt, index) {
-                                    return new CastItem(
-                                        castCrewDetails.cast[index]);
-                                  }),
-                        ),
+                        buildCast(context),
                         Padding(
                           padding: EdgeInsets.only(top: 2.0),
                         ),
                         CustomText("Crew :", 20.0, true, Colors.white, null),
-                        Container(
-                          height: 240.0,
-                          child: (castCrewDetails?.crew == null ||
-                                  castCrewDetails?.crew?.length == 0)
-                              ? castCrewDetails == null
-                                  ? Center(child: CustomProgress(context))
-                                  : Center(
-                                      child: CenterText(
-                                          "Not Available",
-                                          20.0,
-                                          true,
-                                          Theme.of(context).primaryColor,
-                                          1))
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: castCrewDetails.crew.length,
-                                  itemBuilder: (ctxt, index) {
-                                    return new CrewItem(
-                                        castCrewDetails.crew[index]);
-                                  }),
+                        buildCrew(context),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
                         ),
+                        CustomText("Videos :", 20.0, true, Colors.white, null),
+                        buildVideos(context),
                       ],
                     ),
                   ),
@@ -212,10 +117,105 @@ class MovieInfoPageState extends State<MovieInfoPage> {
     );
   }
 
+  Container buildCrew(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (castCrewDetails?.crew == null || castCrewDetails?.crew?.length == 0)
+          ? castCrewDetails == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: castCrewDetails.crew.length,
+              itemBuilder: (ctxt, index) {
+                return new CrewItem(castCrewDetails.crew[index]);
+              }),
+    );
+  }
+
+  Container buildCast(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (castCrewDetails?.cast == null || castCrewDetails?.cast?.length == 0)
+          ? castCrewDetails == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: castCrewDetails.cast.length,
+              itemBuilder: (ctxt, index) {
+                return new CastItem(castCrewDetails.cast[index]);
+              }),
+    );
+  }
+
+  Container buildVideos(BuildContext context) {
+    return Container(
+      height: 240.0,
+      child: (_movieVideoModel?.results == null || _movieVideoModel?.results?.length == 0)
+          ? _movieVideoModel == null
+              ? Center(child: CustomProgress(context))
+              : Center(child: CenterText("Not Available", 20.0, true, Theme.of(context).primaryColor, 1))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _movieVideoModel.results.length,
+              itemBuilder: (ctxt, index) {
+                return VideoItem(_movieVideoModel.results[index]);
+              }),
+    );
+  }
+
+  Row buildMovieInfo() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        CachedNetworkImage(
+          imageUrl: ImageUtils.getFullImagePath(_movieDetails.posterPath),
+          placeholder: new CircularProgressIndicator(),
+          errorWidget: new Icon(Icons.movie_filter),
+          height: 200.0,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20.0),
+        ),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CustomText(
+                  _movieDetails.originalTitle == _movieDetails.title
+                      ? _movieDetails.originalTitle
+                      : _movieDetails.originalTitle + " (${_movieDetails.title})",
+                  20.0,
+                  true,
+                  Colors.white,
+                  2),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              CustomText("Release Date : ${_movieDetails.releaseDate}", 16.0, false, Colors.white, null),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+              ),
+              StarRating(
+                starCount: 5,
+                rating: _movieDetails.voteAverage / 2.0,
+              ),
+              CustomText("Votes : ${_movieDetails.voteCount}", 16.0, false, Colors.white, null),
+              Padding(
+                padding: EdgeInsets.only(top: 20.0),
+              ),
+              CustomText("Genre : $generes", 16.0, false, Colors.white, 2),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   fetchMovieDetails() {
     HttpClient()
-        .getUrl(Uri.parse(
-            "https://api.themoviedb.org/3/movie/$movieId?api_key=${TMDB.key}")) //
+        .getUrl(Uri.parse("https://api.themoviedb.org/3/movie/$movieId?api_key=${TMDB.key}")) //
         // produces a request object
         .then((request) => request.close()) // sends the request
         .then((response) {
@@ -240,8 +240,24 @@ class MovieInfoPageState extends State<MovieInfoPage> {
         .then((request) => request.close())
         .then((response) {
       response.transform(utf8.decoder).join().then((creditsJson) {
+        fetchVideos();
         Map creditsmap = json.decode(creditsJson);
         castCrewDetails = CastCrewDetails.fromJson(creditsmap);
+        if (mounted) setState(() {});
+      });
+    });
+  }
+
+  fetchVideos() {
+    HttpClient()
+        .getUrl(Uri.parse("https://api.themoviedb"
+            ".org/3/movie/$movieId/videos?api_key=${TMDB.key}&language=en-US"))
+        .then((request) => request.close())
+        .then((response) {
+      response.transform(utf8.decoder).join().then((creditsJson) {
+        Map videosmap = json.decode(creditsJson);
+        _movieVideoModel = MovieVideoModel.fromJson(videosmap);
+        _movieVideoModel.results = _movieVideoModel.results.where((video) => video.site == "YouTube").toList();
         if (mounted) setState(() {});
       });
     });

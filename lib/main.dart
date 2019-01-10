@@ -3,7 +3,7 @@ import 'package:movie_go/pages/splash_page.dart';
 
 void main() => runApp(MyApp());
 
-var primaryColor = Colors.orange;
+var primaryColor = Colors.amber;
 var accentColor = Colors.black;
 
 class MyApp extends StatelessWidget {
@@ -21,8 +21,7 @@ class MyApp extends StatelessWidget {
           buttonColor: primaryColor,
           highlightColor: accentColor,
           height: 50.0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
         ),
         cursorColor: Colors.pink,
       ),
