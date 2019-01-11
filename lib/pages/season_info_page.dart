@@ -62,41 +62,37 @@ class _SeasonInfoPageState extends State<SeasonInfoPage> {
                 Container(
                   decoration: BoxDecoration(color: Color.fromARGB(200, 0, 0, 0)),
                 ),
-                Container(
-                  padding: EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.0),
-                      ),
-                      CustomText("Videos :", 20.0, true, Colors.white, null),
-                      buildVideos(context),
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.0),
-                      ),
-                      CustomText("Episodes : ${_seasonInfo?.episodes?.length}", 20.0, true, Colors.white, null),
-                      _seasonInfo?.episodes == null
-                          ? Container()
-                          : Expanded(
-                              child: Scrollbar(
-                                child: GridView.count(
-                                  scrollDirection: Axis.horizontal,
-                                  crossAxisCount: 1,
-                                  childAspectRatio: 1.2,
-                                  children: _seasonInfo.episodes.map((episode) {
-                                    return new EpisodeListItem(episode);
-                                  }).toList(),
+                SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
+                        ),
+                        CustomText("Videos :", 20.0, true, Colors.white, null),
+                        buildVideos(context),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.0),
+                        ),
+                        CustomText("Episodes : ${_seasonInfo?.episodes?.length}", 20.0, true, Colors.white, null),
+                        Container(
+                          height: 380.0,
+                          child: _seasonInfo?.episodes == null
+                              ? Container()
+                              : Scrollbar(
+                                  child: GridView.count(
+                                    scrollDirection: Axis.horizontal,
+                                    crossAxisCount: 1,
+                                    children: _seasonInfo.episodes.map((episode) {
+                                      return new EpisodeListItem(episode);
+                                    }).toList(),
+                                  ),
                                 ),
-                                /*new ListView
-                                .builder(
-                                    itemCount: _seasonInfo.episodes.length,
-                                    itemBuilder: (BuildContext ctxt, int index) {
-                                      return new EpisodeListItem(_seasonInfo.episodes[index]);
-                                    }),*/
-                              ),
-                            ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -159,46 +155,41 @@ class EpisodeListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 8.0,
-      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        padding: EdgeInsets.all(20.0),
-        decoration: BoxDecoration(color: Colors.black),
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            children: <Widget>[
-              (episode.stillPath == null)
-                  ? Icon(
-                      Icons.live_tv,
-                    )
-                  : CachedNetworkImage(
-                      imageUrl: ImageUtils.getFullImagePath(episode.stillPath),
-                      placeholder: new CircularProgressIndicator(),
-                      errorWidget: new Icon(Icons.error),
-                    ),
-              CustomText("${episode.episodeNumber}. ${episode.name}", 20.0, true, Colors.white, 2),
-              Padding(padding: EdgeInsets.only(top: 10.0)),
-              Row(
-                children: <Widget>[
-                  episode.airDate == null
-                      ? Container()
-                      : CustomText("Aired: ${episode.airDate}", 16.0, false, Colors.white, 1),
-                  Expanded(
-                    child: Container(),
-                    flex: 1,
+    return Container(
+      padding: EdgeInsets.all(20.0),
+      child: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Column(
+          children: <Widget>[
+            (episode.stillPath == null)
+                ? Icon(
+                    Icons.live_tv,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: ImageUtils.getFullImagePath(episode.stillPath),
+                    placeholder: new CircularProgressIndicator(),
+                    errorWidget: new Icon(Icons.error),
                   ),
-                  StarRating(
-                    starCount: 5,
-                    rating: episode.voteAverage / 2.0,
-                  ),
-                ],
-              ),
-              Padding(padding: EdgeInsets.only(top: 10.0)),
-              episode.overview == null ? Container() : CustomText(episode.overview, 14.0, false, Colors.white, 3),
-            ],
-          ),
+            CustomText("${episode.episodeNumber}. ${episode.name}", 20.0, true, Colors.white, 2),
+            Padding(padding: EdgeInsets.only(top: 10.0)),
+            Row(
+              children: <Widget>[
+                episode.airDate == null
+                    ? Container()
+                    : CustomText("Aired: ${episode.airDate}", 16.0, false, Colors.white, 1),
+                Expanded(
+                  child: Container(),
+                  flex: 1,
+                ),
+                StarRating(
+                  starCount: 5,
+                  rating: episode.voteAverage / 2.0,
+                ),
+              ],
+            ),
+            Padding(padding: EdgeInsets.only(top: 10.0)),
+            episode.overview == null ? Container() : CustomText(episode.overview, 14.0, false, Colors.white, 3),
+          ],
         ),
       ),
     );
