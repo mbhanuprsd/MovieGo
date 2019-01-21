@@ -10,10 +10,11 @@ import 'package:movie_go/models/people_search_model.dart';
 import 'package:movie_go/models/people_tv_credits.dart';
 import 'package:movie_go/models/tv_details.dart';
 import 'package:movie_go/models/tv_search_model.dart';
+import 'package:movie_go/tmdb.dart';
 import 'package:movie_go/utils/app_util.dart';
 import 'package:movie_go/utils/image_util.dart';
 import 'package:movie_go/utils/navigator_util.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_youtube/flutter_youtube.dart';
 
 class MovieListItem extends StatelessWidget {
   final MovieInfo movieInfo;
@@ -255,13 +256,9 @@ class VideoItem extends StatelessWidget {
       ),
     );
   }
-}
 
-_launchYoutube(BuildContext context, String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    AppUtils.showSimpleAlert(context, "Cannot open video");
+  _launchYoutube(BuildContext context, String url) async {
+    FlutterYoutube.playYoutubeVideoByUrl(apiKey: TMDB.youtubeAPIKey, videoUrl: url, autoPlay: true, fullScreen: false);
   }
 }
 

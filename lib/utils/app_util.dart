@@ -16,14 +16,13 @@ class AppUtils {
     showAlert(context, message, null, "Ok", () => Navigator.of(context).pop());
   }
 
-  static showAlert(BuildContext context, String title, String message,
-      String buttonText, Function callBack) {
+  static showAlert(BuildContext context, String title, String message, String buttonText, Function callBack) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text(title),
+            title: title == null ? null : new Text(title),
             content: message == null ? null : new Text(message),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
@@ -36,14 +35,8 @@ class AppUtils {
         });
   }
 
-  static showConditionalAlert(
-      BuildContext context,
-      String title,
-      String message,
-      String buttonText1,
-      Function callBack1,
-      String buttonText2,
-      Function callBack2) {
+  static showConditionalAlert(BuildContext context, String title, String message, String buttonText1,
+      Function callBack1, String buttonText2, Function callBack2) {
     showDialog(
         context: context,
         builder: (BuildContext context) {

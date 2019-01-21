@@ -23,6 +23,7 @@ dependencies:
   firebase_auth:
   cloud_firestore:
   url_launcher:
+  flutter_youtube:
 
 dev_dependencies:
   flutter_launcher_icons:
